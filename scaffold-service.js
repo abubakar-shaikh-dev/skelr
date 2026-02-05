@@ -20,6 +20,120 @@ import path from "path";
 // When installed via npm/npx, files will be created in the user's project root
 
 // ═══════════════════════════════════════════════════════════════════════════
+// CLI ARGUMENT PARSING
+// ═══════════════════════════════════════════════════════════════════════════
+function parseCliArgs(argv) {
+  const args = {
+    name: null,
+    structure: null,
+    typescript: false,
+    help: false,
+  };
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+
+    // Help flag
+    if (arg === "-h" || arg === "--help") {
+      args.help = true;
+    }
+    // TypeScript flag
+    else if (arg === "-ts" || arg === "--typescript") {
+      args.typescript = true;
+    }
+    // Name argument
+    else if (arg === "-n" || arg === "--name") {
+      args.name = argv[++i];
+    } else if (arg.startsWith("--name=")) {
+      args.name = arg.split("=")[1];
+    }
+    // Structure argument
+    else if (arg === "-s" || arg === "--structure") {
+      args.structure = argv[++i];
+    } else if (arg.startsWith("--structure=")) {
+      args.structure = arg.split("=")[1];
+    }
+  }
+
+  return args;
+}
+
+function printHelp() {
+  console.log("");
+  console.log(chalk.bold.white("  scaffold-service") + chalk.dim(" - Service scaffolding CLI"));
+  console.log("");
+  console.log(chalk.bold.white("  USAGE"));
+  console.log(chalk.dim("  ─────────────────────────────────────────────────────────"));
+  console.log("    $ scaffold-service [options]");
+  console.log("");
+  console.log(chalk.bold.white("  OPTIONS"));
+  console.log(chalk.dim("  ─────────────────────────────────────────────────────────"));
+  console.log(
+    "    " +
+      chalk.cyan("-n, --name <name>") +
+      "        " +
+      chalk.dim("Service name (snake_case)")
+  );
+  console.log(
+    "    " +
+      chalk.cyan("-s, --structure <type>") +
+      "   " +
+      chalk.dim("Folder structure: separate | modular")
+  );
+  console.log(
+    "    " +
+      chalk.cyan("-ts, --typescript") +
+      "        " +
+      chalk.dim("Generate TypeScript files (.ts)")
+  );
+  console.log(
+    "    " +
+      chalk.cyan("-h, --help") +
+      "               " +
+      chalk.dim("Show this help message")
+  );
+  console.log("");
+  console.log(chalk.bold.white("  EXAMPLES"));
+  console.log(chalk.dim("  ─────────────────────────────────────────────────────────"));
+  console.log(
+    "    " +
+      chalk.dim("$") +
+      " scaffold-service " +
+      chalk.cyan("--name=payment --structure=modular")
+  );
+  console.log(
+    "    " +
+      chalk.dim("$") +
+      " scaffold-service " +
+      chalk.cyan("-n user_profile -s separate -ts")
+  );
+  console.log("");
+}
+
+function validateCliArgs(args) {
+  const errors = [];
+
+  if (args.name) {
+    const snakeCaseRegex = /^[a-z]+(_[a-z]+)*$/;
+    if (!snakeCaseRegex.test(args.name)) {
+      errors.push("Service name must be in snake_case or a single lowercase word");
+    }
+  }
+
+  if (args.structure) {
+    const validStructures = ["separate", "modular", "current"];
+    if (!validStructures.includes(args.structure.toLowerCase())) {
+      errors.push("Structure must be 'separate' or 'modular'");
+    }
+  }
+
+  return errors;
+}
+
+// Parse CLI arguments
+const cliArgs = parseCliArgs(process.argv.slice(2));
+
+// ═══════════════════════════════════════════════════════════════════════════
 // COLOR PALETTE
 // ═══════════════════════════════════════════════════════════════════════════
 const colors = {
@@ -838,19 +952,75 @@ function printSuccessSummary(name, folderStructure, filesCreated) {
 // ═══════════════════════════════════════════════════════════════════════════
 async function main() {
   try {
-    // Print banner
-    printBanner();
+    // Handle --help flag
+    if (cliArgs.help) {
+      printHelp();
+      process.exit(0);
+    }
 
-    // Step 1: Select folder structure
-    const folderStructure = await selectFolderStructure();
+    // Validate CLI arguments if provided
+    const validationErrors = validateCliArgs(cliArgs);
+    if (validationErrors.length > 0) {
+      for (const error of validationErrors) {
+        console.log(colors.red(`  ✗ ${error}`));
+      }
+      console.log("");
+      printHelp();
+      process.exit(1);
+    }
 
-    // Step 2: Get service name
-    const name = await getServiceName();
+    // Non-interactive mode: skip banner if all args provided
+    const isNonInteractive = cliArgs.name && cliArgs.structure;
+
+    if (!isNonInteractive) {
+      // Print banner only in interactive mode
+      printBanner();
+    } else {
+      console.log("");
+      console.log(
+        colors.gradient1("  ⚡ ") +
+          colors.bold.white("Quick Mode") +
+          colors.dim(" - Generating service files...")
+      );
+      console.log("");
+    }
+
+    // Step 1: Select folder structure (skip if provided via CLI)
+    let folderStructure;
+    if (cliArgs.structure) {
+      // Normalize structure value
+      const structureMap = {
+        separate: "current",
+        modular: "modular",
+        current: "current",
+      };
+      folderStructure = structureMap[cliArgs.structure.toLowerCase()] || "current";
+      if (!isNonInteractive) {
+        const structureName = folderStructure === "current" ? "Separate Folder Structure" : "Modular Folder Structure";
+        console.log(colors.green("  ✓ Structure: ") + colors.bold.white(structureName) + colors.dim(" (from CLI)"));
+      }
+    } else {
+      folderStructure = await selectFolderStructure();
+    }
+
+    // Step 2: Get service name (skip if provided via CLI)
+    let name;
+    if (cliArgs.name) {
+      name = cliArgs.name.toLowerCase();
+      if (!isNonInteractive) {
+        console.log(colors.green("  ✓ Service name: ") + colors.bold.white(name) + colors.dim(" (from CLI)"));
+        console.log("");
+      }
+    } else {
+      name = await getServiceName();
+    }
     const lowerName = name.toLowerCase();
     const camelName = snakeToCamel(lowerName);
 
-    // Step 3: Show configuration preview and confirm
-    await showConfigurationPreview(lowerName, camelName, folderStructure);
+    // Step 3: Show configuration preview and confirm (skip in non-interactive mode)
+    if (!isNonInteractive) {
+      await showConfigurationPreview(lowerName, camelName, folderStructure);
+    }
 
     // Step 4: Generate files
     const filesCreated = await generateFiles(

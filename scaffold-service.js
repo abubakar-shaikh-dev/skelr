@@ -410,11 +410,77 @@ async function selectFolderStructure() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// LANGUAGE SELECTION
+// ═══════════════════════════════════════════════════════════════════════════
+async function selectLanguage() {
+  console.log(
+    colors.bold.white("Step 2") +
+      " " +
+      colors.gray("→") +
+      " " +
+      colors.white("Language"),
+  );
+  console.log(
+    colors.dim.gray(
+      "───────────────────────────────────────────────────────────────",
+    ),
+  );
+  console.log("");
+
+  console.log(
+    colors.cyan("  ▸ ") + colors.white("Select programming language"),
+  );
+  console.log("");
+  console.log(
+    "    " +
+      colors.bold.white("[1]") +
+      " " +
+      colors.accent("JavaScript") +
+      " " +
+      colors.dim("(.js files)"),
+  );
+  console.log(
+    "    " +
+      colors.bold.white("[2]") +
+      " " +
+      colors.accent("TypeScript") +
+      " " +
+      colors.dim("(.ts files with type annotations)"),
+  );
+  console.log("");
+
+  const { choice } = await inquirer.prompt([
+    {
+      type: "input",
+      name: "choice",
+      message: colors.bold.white("→ Enter choice [1/2]:"),
+      prefix: " ",
+      validate: (input) => {
+        if (input === "1" || input === "2") {
+          return true;
+        }
+        return colors.red("✗ Invalid choice. Please enter 1 or 2");
+      },
+    },
+  ]);
+
+  const language = choice === "1" ? "js" : "ts";
+  const languageName = choice === "1" ? "JavaScript" : "TypeScript";
+
+  console.log(
+    colors.green("    ✓ Selected: ") + colors.bold.white(languageName),
+  );
+  console.log("");
+
+  return language;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // SERVICE NAME INPUT
 // ═══════════════════════════════════════════════════════════════════════════
 async function getServiceName() {
   console.log(
-    colors.bold.white("Step 2") +
+    colors.bold.white("Step 3") +
       " " +
       colors.gray("→") +
       " " +
@@ -482,9 +548,9 @@ function snakeToCamel(str) {
 // ═══════════════════════════════════════════════════════════════════════════
 // CONFIGURATION PREVIEW
 // ═══════════════════════════════════════════════════════════════════════════
-async function showConfigurationPreview(name, camelName, folderStructure) {
+async function showConfigurationPreview(name, camelName, folderStructure, language) {
   console.log(
-    colors.bold.white("Step 3") +
+    colors.bold.white("Step 4") +
       " " +
       colors.gray("→") +
       " " +
@@ -518,6 +584,9 @@ async function showConfigurationPreview(name, camelName, folderStructure) {
   );
   console.log(
     "    " + colors.gray("Camel Case") + "         " + colors.accent(camelName),
+  );
+  console.log(
+    "    " + colors.gray("Language") + "           " + colors.accent(language === "ts" ? "TypeScript" : "JavaScript"),
   );
 
   if (folderStructure === "current") {
@@ -679,11 +748,115 @@ export default router;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// TYPESCRIPT FILE TEMPLATES
+// ═══════════════════════════════════════════════════════════════════════════
+function getServiceTemplateTS(folderStructure) {
+  const dbImportPath =
+    folderStructure === "current" ? "../config/db" : "../../config/db";
+  return `import createHttpError from "http-errors";
+
+//Configs
+import db from "${dbImportPath}";
+
+// Define your service types here
+// export interface ServiceResponse<T> {
+//   success: boolean;
+//   data?: T;
+//   message?: string;
+// }
+`;
+}
+
+function getValidationTemplateTS() {
+  return `import { z } from "zod";
+
+// Example validation schema
+// export const createSchema = z.object({
+//   name: z.string().min(1, "Name is required"),
+//   email: z.string().email("Invalid email format"),
+// });
+
+// Infer types from schemas
+// export type CreateInput = z.infer<typeof createSchema>;
+`;
+}
+
+function getControllerTemplateTS(name, camelName, folderStructure) {
+  const serviceImportPath =
+    folderStructure === "current"
+      ? `../services/${name}.service`
+      : `./${name}.service`;
+  const validationImportPath =
+    folderStructure === "current"
+      ? `../validations/${name}.validation`
+      : `./${name}.validation`;
+
+  return `import { Request, Response, NextFunction } from "express";
+
+//Services
+import * as ${camelName}Service from "${serviceImportPath}";
+
+//Validations 
+import * as ${camelName}Validation from "${validationImportPath}";
+
+// Example controller method
+// export const getAll = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ): Promise<void> => {
+//   try {
+//     // Your logic here
+//     res.status(200).json({ success: true });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+`;
+}
+
+function getRouterTemplateTS(name, camelName, folderStructure) {
+  const controllerImportPath =
+    folderStructure === "current"
+      ? `../../controllers/${name}.controller`
+      : `./${name}.controller`;
+  const middlewareImportPath =
+    folderStructure === "current"
+      ? "../../middlewares/token.middleware"
+      : "../../middlewares/token.middleware";
+  const constantsImportPath =
+    folderStructure === "current"
+      ? "../../constants/user.constant"
+      : "../../constants/user.constant";
+
+  return `import express, { Router } from "express";
+
+//Controllers
+import * as ${camelName}Controller from "${controllerImportPath}";
+
+//Middlewares
+import * as tokenMiddleware from "${middlewareImportPath}";
+
+//Constants
+import { ROLES } from "${constantsImportPath}";
+
+const router: Router = express.Router();
+
+// Define your routes here
+// router.get("/", ${camelName}Controller.getAll);
+// router.post("/", ${camelName}Controller.create);
+
+export default router;
+`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // FILE GENERATION
 // ═══════════════════════════════════════════════════════════════════════════
-async function generateFiles(name, camelName, folderStructure) {
+async function generateFiles(name, camelName, folderStructure, language = "js") {
+  const ext = language === "ts" ? ".ts" : ".js";
   console.log(
-    colors.bold.white("Step 4") +
+    colors.bold.white("Step 5") +
       " " +
       colors.gray("→") +
       " " +
@@ -715,38 +888,44 @@ async function generateFiles(name, camelName, folderStructure) {
     await fs.ensureDir(routesFolder);
 
     // Create the service file
-    const serviceFile = path.join(servicesFolder, `${name}.service.js`);
-    await fs.writeFile(serviceFile, getServiceTemplate(folderStructure));
+    const serviceFile = path.join(servicesFolder, `${name}.service${ext}`);
+    const serviceContent = language === "ts" 
+      ? getServiceTemplateTS(folderStructure) 
+      : getServiceTemplate(folderStructure);
+    await fs.writeFile(serviceFile, serviceContent);
     printSuccess(`Created: ${colors.cyan(serviceFile)}`);
     filesCreated.push(serviceFile);
 
     // Create the validation file
     const validationFile = path.join(
       validationsFolder,
-      `${name}.validation.js`,
+      `${name}.validation${ext}`,
     );
-    await fs.writeFile(validationFile, getValidationTemplate());
+    const validationContent = language === "ts" 
+      ? getValidationTemplateTS() 
+      : getValidationTemplate();
+    await fs.writeFile(validationFile, validationContent);
     printSuccess(`Created: ${colors.cyan(validationFile)}`);
     filesCreated.push(validationFile);
 
     // Create the controller file
     const controllerFile = path.join(
       controllersFolder,
-      `${name}.controller.js`,
+      `${name}.controller${ext}`,
     );
-    await fs.writeFile(
-      controllerFile,
-      getControllerTemplate(name, camelName, folderStructure),
-    );
+    const controllerContent = language === "ts" 
+      ? getControllerTemplateTS(name, camelName, folderStructure) 
+      : getControllerTemplate(name, camelName, folderStructure);
+    await fs.writeFile(controllerFile, controllerContent);
     printSuccess(`Created: ${colors.cyan(controllerFile)}`);
     filesCreated.push(controllerFile);
 
     // Create the router file
-    const routerFile = path.join(routesFolder, `${name}.routes.js`);
-    await fs.writeFile(
-      routerFile,
-      getRouterTemplate(name, camelName, folderStructure),
-    );
+    const routerFile = path.join(routesFolder, `${name}.routes${ext}`);
+    const routerContent = language === "ts" 
+      ? getRouterTemplateTS(name, camelName, folderStructure) 
+      : getRouterTemplate(name, camelName, folderStructure);
+    await fs.writeFile(routerFile, routerContent);
     printSuccess(`Created: ${colors.cyan(routerFile)}`);
     filesCreated.push(routerFile);
   } else {
@@ -763,32 +942,38 @@ async function generateFiles(name, camelName, folderStructure) {
     console.log("");
 
     // Create the service file
-    const serviceFile = path.join(moduleFolder, `${name}.service.js`);
-    await fs.writeFile(serviceFile, getServiceTemplate(folderStructure));
+    const serviceFile = path.join(moduleFolder, `${name}.service${ext}`);
+    const serviceContent = language === "ts" 
+      ? getServiceTemplateTS(folderStructure) 
+      : getServiceTemplate(folderStructure);
+    await fs.writeFile(serviceFile, serviceContent);
     printSuccess(`Created: ${colors.cyan(serviceFile)}`);
     filesCreated.push(serviceFile);
 
     // Create the validation file
-    const validationFile = path.join(moduleFolder, `${name}.validation.js`);
-    await fs.writeFile(validationFile, getValidationTemplate());
+    const validationFile = path.join(moduleFolder, `${name}.validation${ext}`);
+    const validationContent = language === "ts" 
+      ? getValidationTemplateTS() 
+      : getValidationTemplate();
+    await fs.writeFile(validationFile, validationContent);
     printSuccess(`Created: ${colors.cyan(validationFile)}`);
     filesCreated.push(validationFile);
 
     // Create the controller file
-    const controllerFile = path.join(moduleFolder, `${name}.controller.js`);
-    await fs.writeFile(
-      controllerFile,
-      getControllerTemplate(name, camelName, folderStructure),
-    );
+    const controllerFile = path.join(moduleFolder, `${name}.controller${ext}`);
+    const controllerContent = language === "ts" 
+      ? getControllerTemplateTS(name, camelName, folderStructure) 
+      : getControllerTemplate(name, camelName, folderStructure);
+    await fs.writeFile(controllerFile, controllerContent);
     printSuccess(`Created: ${colors.cyan(controllerFile)}`);
     filesCreated.push(controllerFile);
 
     // Create the router file
-    const routerFile = path.join(moduleFolder, `${name}.routes.js`);
-    await fs.writeFile(
-      routerFile,
-      getRouterTemplate(name, camelName, folderStructure),
-    );
+    const routerFile = path.join(moduleFolder, `${name}.routes${ext}`);
+    const routerContent = language === "ts" 
+      ? getRouterTemplateTS(name, camelName, folderStructure) 
+      : getRouterTemplate(name, camelName, folderStructure);
+    await fs.writeFile(routerFile, routerContent);
     printSuccess(`Created: ${colors.cyan(routerFile)}`);
     filesCreated.push(routerFile);
   }
@@ -1003,7 +1188,21 @@ async function main() {
       folderStructure = await selectFolderStructure();
     }
 
-    // Step 2: Get service name (skip if provided via CLI)
+    // Step 2: Select language (skip if --typescript provided via CLI)
+    let language;
+    if (cliArgs.typescript) {
+      language = "ts";
+      if (!isNonInteractive) {
+        console.log(colors.green("  ✓ Language: ") + colors.bold.white("TypeScript") + colors.dim(" (from CLI)"));
+      }
+    } else if (isNonInteractive) {
+      // Default to JS in non-interactive mode if --typescript not specified
+      language = "js";
+    } else {
+      language = await selectLanguage();
+    }
+
+    // Step 3: Get service name (skip if provided via CLI)
     let name;
     if (cliArgs.name) {
       name = cliArgs.name.toLowerCase();
@@ -1017,16 +1216,17 @@ async function main() {
     const lowerName = name.toLowerCase();
     const camelName = snakeToCamel(lowerName);
 
-    // Step 3: Show configuration preview and confirm (skip in non-interactive mode)
+    // Step 4: Show configuration preview and confirm (skip in non-interactive mode)
     if (!isNonInteractive) {
-      await showConfigurationPreview(lowerName, camelName, folderStructure);
+      await showConfigurationPreview(lowerName, camelName, folderStructure, language);
     }
 
-    // Step 4: Generate files
+    // Step 5: Generate files
     const filesCreated = await generateFiles(
       lowerName,
       camelName,
       folderStructure,
+      language,
     );
 
     // Print success summary

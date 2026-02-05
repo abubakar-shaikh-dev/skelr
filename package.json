@@ -1,0 +1,42 @@
+{
+  "name": "scaffold-service",
+  "version": "2.0.0",
+  "description": "CLI tool to scaffold service files with separate or modular folder structures",
+  "main": "scaffold-service.js",
+  "type": "module",
+  "bin": {
+    "scaffold-service": "./scaffold-service.js"
+  },
+  "scripts": {
+    "start": "node scaffold-service.js",
+    "scaffold": "node scaffold-service.js",
+    "prepublishOnly": "node -e \"console.log('Publishing scaffold-service v' + require('./package.json').version); if (require('fs').existsSync('.git/index')) { console.log('Git repo detected - ready to publish'); } else { console.warn('Warning: Not in a git repository'); }\""
+  },
+  "keywords": [
+    "scaffold",
+    "service",
+    "boilerplate",
+    "generator",
+    "cli",
+    "express",
+    "nodejs"
+  ],
+  "author": "ABUBAKAR SHAIKH <https://github.com/abubakar-shaikh-dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abubakar-shaikh-dev/scaffold-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/abubakar-shaikh-dev/scaffold-service/issues"
+  },
+  "homepage": "https://github.com/abubakar-shaikh-dev/scaffold-service#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^12.3.0"
+  }
+}

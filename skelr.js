@@ -1,25 +1,12 @@
 #!/usr/bin/env node
-// ═══════════════════════════════════════════════════════════════════════════
-// Service Scaffolder Tool v2.1.0
-// ═══════════════════════════════════════════════════════════════════════════
-// Author    : ABUBAKAR SHAIKH
-// Github    : https://github.com/abubakar-shaikh-dev
-// Repo      : github.com/abubakar-shaikh-dev/scaffold-service.git
-// Tool      : scaffold-service
-// Purpose   : Quickly scaffold new service boilerplate code
-// Year      : 2025-2026
-// Note      : Tampering with the author information does not break the script, but it does summon a mild sense of professional shame
-// ═══════════════════════════════════════════════════════════════════════════
+// skelr - Service scaffolding CLI
+// Author: Abubakar Shaikh (github.com/abubakar-shaikh-dev)
 
 import chalk from "chalk";
 import * as p from "@clack/prompts";
 import fs from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
-import * as emoji from "node-emoji";
-
-// Note: This tool runs from the current working directory (where user executes the command)
-// When installed via npm/npx, files will be created in the user's project root
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CLI ARGUMENT PARSING
@@ -63,7 +50,7 @@ function parseCliArgs(argv) {
 function printHelp() {
   console.log("");
   console.log(
-    chalk.bold.white("  scaffold-service") +
+    chalk.bold.white("  skelr") +
       chalk.dim(" - Service scaffolding CLI"),
   );
   console.log("");
@@ -71,7 +58,7 @@ function printHelp() {
   console.log(
     chalk.dim("  ─────────────────────────────────────────────────────────"),
   );
-  console.log("    $ scaffold-service [options]");
+  console.log("    $ skelr [options]");
   console.log("");
   console.log(chalk.bold.white("  OPTIONS"));
   console.log(
@@ -109,13 +96,13 @@ function printHelp() {
   console.log(
     "    " +
       chalk.dim("$") +
-      " scaffold-service " +
+      " skelr " +
       chalk.cyan("--name=payment --structure=modular"),
   );
   console.log(
     "    " +
       chalk.dim("$") +
-      " scaffold-service " +
+      " skelr " +
       chalk.cyan("-n user_profile -s separate -ts"),
   );
   console.log("");
@@ -146,164 +133,77 @@ function validateCliArgs(args) {
 // Parse CLI arguments
 const cliArgs = parseCliArgs(process.argv.slice(2));
 
-// ═══════════════════════════════════════════════════════════════════════════
-// COLOR PALETTE
-// ═══════════════════════════════════════════════════════════════════════════
-const colors = {
-  red: chalk.red,
-  green: chalk.green,
-  yellow: chalk.yellow.bold,
-  blue: chalk.blue,
-  purple: chalk.magenta,
-  cyan: chalk.cyan,
-  white: chalk.white.bold,
-  gray: chalk.gray,
-  bold: chalk.bold,
+// Minimal color palette
+const c = {
   dim: chalk.dim,
-
-  // Modern gradient colors
-  gradient1: chalk.hex("#00afff"), // Electric Blue
-  gradient2: chalk.hex("#00d7ff"), // Cyan Blue
-  gradient3: chalk.hex("#5fffff"), // Sky Blue
-  accent: chalk.hex("#ff87d7"), // Pink Accent
+  bold: chalk.bold,
+  cyan: chalk.cyan,
+  green: chalk.green,
+  red: chalk.red,
+  yellow: chalk.yellow,
+  white: chalk.white,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
-
-// Error handler with modern styling
+// Utility functions
 function errorExit(message) {
-  console.log("");
-  console.log(
-    colors.red.bold(
-      "╭─────────────────────────────────────────────────────────╮",
-    ),
-  );
-  console.log(
-    colors.red.bold(
-      `│  ${emoji.get("warning")}  ERROR                                              │`,
-    ),
-  );
-  console.log(
-    colors.red.bold(
-      "╰─────────────────────────────────────────────────────────╯",
-    ),
-  );
-  console.log(colors.red(`  ${message}`));
-  console.log("");
+  console.log();
+  console.log(c.red("✗"), message);
+  console.log();
   process.exit(1);
 }
 
-// Success message helper
 function printSuccess(message) {
-  console.log(
-    `${colors.green(`  ${emoji.get("white_check_mark")} `)}${colors.white(message)}`,
-  );
+  console.log(c.green("  ✓"), message);
 }
 
-// Info message helper
 function printInfo(message) {
-  console.log(
-    `${colors.cyan(`  ${emoji.get("small_blue_diamond")} `)}${colors.dim(message)}`,
-  );
+  console.log(c.dim("  ›"), message);
 }
 
-// Warning message helper
-function printWarning(message) {
-  console.log(`${colors.yellow(`  ${emoji.get("warning")} `)}${message}`);
-}
-
-// Clear console
 console.clear();
 
-// ═══════════════════════════════════════════════════════════════════════════
-// MODERN BANNER - 2025 Design
-// ═══════════════════════════════════════════════════════════════════════════
 function printBanner() {
-  console.log("");
-  console.log(
-    colors.gradient1(
-      "╔═══════════════════════════════════════════════════════════════╗",
-    ),
-  );
-  console.log(
-    colors.gradient2(
-      "║                                                               ║",
-    ),
-  );
-  console.log(
-    colors.gradient2("║         ") +
-      colors.white.bold(
-        `${emoji.get("building_construction")}   S E R V I C E   S C A F F O L D E R`,
-      ) +
-      "   " +
-      colors.gradient2(emoji.get("building_construction")) +
-      "           " +
-      colors.gradient2("║"),
-  );
-  console.log(
-    colors.gradient2(
-      "║                                                               ║",
-    ),
-  );
-  console.log(
-    colors.gradient3(
-      "╠═══════════════════════════════════════════════════════════════╣",
-    ),
-  );
-  console.log(
-    colors.gradient3("║      ") +
-      colors.dim("Quickly scaffold new service boilerplate code") +
-      "            " +
-      colors.gradient3("║"),
-  );
-  console.log(
-    colors.gradient3(
-      "╠═══════════════════════════════════════════════════════════════╣",
-    ),
-  );
-  console.log(
-    colors.gradient3("║  ") +
-      colors.gray("Author") +
-      "  " +
-      colors.white("ABUBAKAR SHAIKH") +
-      "                                      " +
-      colors.gradient3("║"),
-  );
-  console.log(
-    colors.gradient3("║  ") +
-      colors.gray("Github") +
-      "  " +
-      colors.cyan("github.com/abubakar-shaikh-dev") +
-      "                       " +
-      colors.gradient3("║"),
-  );
-  console.log(
-    colors.gradient3("║  ") +
-      colors.gray("Tool") +
-      "    " +
-      colors.accent("scaffold-service") +
-      "                                     " +
-      colors.gradient3("║"),
-  );
-  console.log(
-    colors.gradient3("║  ") +
-      colors.gray("Version") +
-      " " +
-      colors.white("2.0.0") +
-      " " +
-      colors.dim("") +
-      "                                               " +
-      colors.gradient3("║"),
-  );
-  console.log(
-    colors.gradient1(
-      "╚═══════════════════════════════════════════════════════════════╝",
-    ),
-  );
-  console.log("");
-  console.log("");
+  console.log();
+  console.log(c.bold("skelr") + c.dim(" v2.1.0"));
+  console.log(c.dim("Service scaffolding CLI"));
+  console.log();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONFIG FILE LOADING
+// ═══════════════════════════════════════════════════════════════════════════
+const CONFIG_FILE = ".skelrrc.json";
+
+function loadConfig() {
+  const configPath = path.join(process.cwd(), CONFIG_FILE);
+  
+  if (!existsSync(configPath)) {
+    return null;
+  }
+  
+  try {
+    const content = require("fs").readFileSync(configPath, "utf-8");
+    const config = JSON.parse(content);
+    
+    console.log(c.green("✓") + c.dim(` Config file detected: ${CONFIG_FILE}`));
+    console.log();
+    
+    return {
+      structure: config.structure === "modular" ? "modular" : config.structure === "separate" ? "current" : null,
+      language: config.language === "ts" ? "ts" : config.language === "js" ? "js" : null,
+      crud: config.crud ? {
+        enabled: config.crud.enabled === true,
+        softDelete: config.crud.soft_delete === "boolean" ? "boolean" : "timestamp"
+      } : null
+    };
+  } catch (error) {
+    console.log(c.yellow("⚠") + c.dim(` Invalid config file: ${CONFIG_FILE}`));
+    console.log();
+    return null;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -311,120 +211,120 @@ function printBanner() {
 // ═══════════════════════════════════════════════════════════════════════════
 async function selectFolderStructure() {
   console.log(
-    colors.bold.white("Step 1") +
+    c.bold.white("Step 1") +
       " " +
-      colors.gray("→") +
+      c.dim("→") +
       " " +
-      colors.white("Folder Structure"),
+      c.white("Folder Structure"),
   );
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
   console.log("");
 
   console.log(
-    colors.cyan(`  ${emoji.get("small_blue_diamond")} `) +
-      colors.white("Select folder structure type"),
+    c.cyan(`  › `) +
+      c.white("Select folder structure type"),
   );
   console.log("");
   console.log(
     "    " +
-      colors.bold.white("[1]") +
+      c.bold.white("[1]") +
       " " +
-      colors.accent("Separate Folder Structure") +
+      c.cyan("Separate Folder Structure") +
       " " +
-      colors.dim("(Distributed across folders)"),
+      c.dim("(Distributed across folders)"),
   );
   console.log(
     "        " +
-      colors.dim("├─ src/services/") +
-      colors.gray("name") +
-      colors.dim(".service.js"),
+      c.dim("├─ src/services/") +
+      c.dim("name") +
+      c.dim(".service.js"),
   );
   console.log(
     "        " +
-      colors.dim("├─ src/validations/") +
-      colors.gray("name") +
-      colors.dim(".validation.js"),
+      c.dim("├─ src/validations/") +
+      c.dim("name") +
+      c.dim(".validation.js"),
   );
   console.log(
     "        " +
-      colors.dim("├─ src/controllers/") +
-      colors.gray("name") +
-      colors.dim(".controller.js"),
+      c.dim("├─ src/controllers/") +
+      c.dim("name") +
+      c.dim(".controller.js"),
   );
   console.log(
     "        " +
-      colors.dim("└─ src/routes/v1/") +
-      colors.gray("name") +
-      colors.dim(".routes.js"),
+      c.dim("└─ src/routes/v1/") +
+      c.dim("name") +
+      c.dim(".routes.js"),
   );
   console.log("");
   console.log(
     "    " +
-      colors.bold.white("[2]") +
+      c.bold.white("[2]") +
       " " +
-      colors.accent("Modular Folder Structure") +
+      c.cyan("Modular Folder Structure") +
       " " +
-      colors.dim("(All-in-one folder)"),
+      c.dim("(All-in-one folder)"),
   );
   console.log(
     "        " +
-      colors.dim("└─ src/modules/") +
-      colors.gray("name") +
-      colors.dim("/"),
+      c.dim("└─ src/modules/") +
+      c.dim("name") +
+      c.dim("/"),
   );
   console.log(
     "            " +
-      colors.dim("├─ ") +
-      colors.gray("name") +
-      colors.dim(".service.js"),
+      c.dim("├─ ") +
+      c.dim("name") +
+      c.dim(".service.js"),
   );
   console.log(
     "            " +
-      colors.dim("├─ ") +
-      colors.gray("name") +
-      colors.dim(".validation.js"),
+      c.dim("├─ ") +
+      c.dim("name") +
+      c.dim(".validation.js"),
   );
   console.log(
     "            " +
-      colors.dim("├─ ") +
-      colors.gray("name") +
-      colors.dim(".controller.js"),
+      c.dim("├─ ") +
+      c.dim("name") +
+      c.dim(".controller.js"),
   );
   console.log(
     "            " +
-      colors.dim("└─ ") +
-      colors.gray("name") +
-      colors.dim(".routes.js"),
+      c.dim("└─ ") +
+      c.dim("name") +
+      c.dim(".routes.js"),
   );
   console.log("");
 
   const choice = await p.select({
-    message: colors.bold.white("Select folder structure:"),
+    message: c.bold.white("Select folder structure:"),
     options: [
       {
         value: "1",
         label:
-          colors.accent("Separate Folder Structure") +
+          c.cyan("Separate Folder Structure") +
           " " +
-          colors.dim("(Distributed across folders)"),
+          c.dim("(Distributed across folders)"),
       },
       {
         value: "2",
         label:
-          colors.accent("Modular Folder Structure") +
+          c.cyan("Modular Folder Structure") +
           " " +
-          colors.dim("(All-in-one folder)"),
+          c.dim("(All-in-one folder)"),
       },
     ],
   });
 
   if (p.isCancel(choice)) {
     console.log(
-      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+      c.yellow(`\n  ⚠ Operation cancelled by user.`),
     );
     process.exit(0);
   }
@@ -434,8 +334,8 @@ async function selectFolderStructure() {
     choice === "1" ? "Separate Folder Structure" : "Modular Folder Structure";
 
   console.log(
-    colors.green(`    ${emoji.get("white_check_mark")} Selected: `) +
-      colors.bold.white(structureName),
+    c.green(`    ✓ Selected: `) +
+      c.bold.white(structureName),
   );
   console.log("");
 
@@ -446,63 +346,26 @@ async function selectFolderStructure() {
 // LANGUAGE SELECTION
 // ═══════════════════════════════════════════════════════════════════════════
 async function selectLanguage() {
-  console.log(
-    colors.bold.white("Step 2") +
-      " " +
-      colors.gray("→") +
-      " " +
-      colors.white("Language"),
-  );
-  console.log(
-    colors.dim.gray(
-      "───────────────────────────────────────────────────────────────",
-    ),
-  );
-  console.log("");
-
-  console.log(
-    colors.cyan(`  ${emoji.get("small_blue_diamond")} `) +
-      colors.white("Select programming language"),
-  );
-  console.log("");
-  console.log(
-    "    " +
-      colors.bold.white("[1]") +
-      " " +
-      colors.accent("JavaScript") +
-      " " +
-      colors.dim("(.js files)"),
-  );
-  console.log(
-    "    " +
-      colors.bold.white("[2]") +
-      " " +
-      colors.accent("TypeScript") +
-      " " +
-      colors.dim("(.ts files with type annotations)"),
-  );
-  console.log("");
-
   const choice = await p.select({
-    message: colors.bold.white("Select programming language:"),
+    message: c.bold.white("Select programming language:"),
     options: [
       {
         value: "1",
-        label: colors.accent("JavaScript") + " " + colors.dim("(.js files)"),
+        label: c.cyan("JavaScript") + " " + c.dim("(.js files)"),
       },
       {
         value: "2",
         label:
-          colors.accent("TypeScript") +
+          c.cyan("TypeScript") +
           " " +
-          colors.dim("(.ts files with type annotations)"),
+          c.dim("(.ts files with type annotations)"),
       },
     ],
   });
 
   if (p.isCancel(choice)) {
     console.log(
-      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+      c.yellow(`\n  ⚠ Operation cancelled by user.`),
     );
     process.exit(0);
   }
@@ -511,8 +374,8 @@ async function selectLanguage() {
   const languageName = choice === "1" ? "JavaScript" : "TypeScript";
 
   console.log(
-    colors.green(`    ${emoji.get("white_check_mark")} Selected: `) +
-      colors.bold.white(languageName),
+    c.green(`    ✓ Selected: `) +
+      c.bold.white(languageName),
   );
   console.log("");
 
@@ -524,52 +387,52 @@ async function selectLanguage() {
 // ═══════════════════════════════════════════════════════════════════════════
 async function askForCrudApis() {
   console.log(
-    colors.bold.white("Step 3") +
+    c.bold.white("Step 3") +
       " " +
-      colors.gray("→") +
+      c.dim("→") +
       " " +
-      colors.white("Pre-made CRUD APIs"),
+      c.white("Pre-made CRUD APIs"),
   );
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
   console.log("");
 
   console.log(
-    colors.cyan(`  ${emoji.get("small_blue_diamond")} `) +
-      colors.white("Would you like pre-made CRUD APIs?"),
+    c.cyan(`  › `) +
+      c.white("Would you like pre-made CRUD APIs?"),
   );
   console.log(
-    colors.dim(
+    c.dim(
       "    This generates complete Create, Read, Update, Delete operations",
     ),
   );
   console.log("");
   console.log(
     "    " +
-      colors.bold.white("APIs included:") +
+      c.bold.white("APIs included:") +
       " " +
-      colors.dim("POST, GET (all), GET (by id), PUT (by id), DELETE (by id)"),
+      c.dim("POST, GET (all), GET (by id), PUT (by id), DELETE (by id)"),
   );
   console.log("");
 
   const choice = await p.confirm({
-    message: colors.bold.white("Generate pre-made CRUD APIs?"),
+    message: c.bold.white("Generate pre-made CRUD APIs?"),
     initialValue: false,
   });
 
   if (p.isCancel(choice)) {
     console.log(
-      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+      c.yellow(`\n  ⚠ Operation cancelled by user.`),
     );
     process.exit(0);
   }
 
   console.log(
-    colors.green(`    ${emoji.get("white_check_mark")} Selected: `) +
-      colors.bold.white(choice ? "Yes - Generate CRUD APIs" : "No - Empty templates"),
+    c.green(`    ✓ Selected: `) +
+      c.bold.white(choice ? "Yes - Generate CRUD APIs" : "No - Empty templates"),
   );
   console.log("");
 
@@ -581,58 +444,58 @@ async function askForCrudApis() {
 // ═══════════════════════════════════════════════════════════════════════════
 async function getPrismaModelName() {
   console.log(
-    colors.bold.white("Step 3.1") +
+    c.bold.white("Step 3.1") +
       " " +
-      colors.gray("→") +
+      c.dim("→") +
       " " +
-      colors.white("Prisma Model Name"),
+      c.white("Prisma Model Name"),
   );
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
   console.log("");
 
   console.log(
-    colors.cyan(`  ${emoji.get("small_blue_diamond")} `) +
-      colors.white("Enter Prisma model name ") +
-      colors.dim("(exact name from prisma schema file)"),
+    c.cyan(`  › `) +
+      c.white("Enter Prisma model name ") +
+      c.dim("(exact name from prisma schema file)"),
   );
   console.log(
-    colors.dim("    Examples: ") +
-      colors.accent("users") +
-      colors.dim(", ") +
-      colors.accent("products") +
-      colors.dim(", ") +
-      colors.accent("orders"),
+    c.dim("    Examples: ") +
+      c.cyan("users") +
+      c.dim(", ") +
+      c.cyan("products") +
+      c.dim(", ") +
+      c.cyan("orders"),
   );
   console.log(
-    colors.yellow(`    ${emoji.get("warning")} `) +
-      colors.dim("Must match exactly as defined in your schema.prisma file"),
+    c.yellow(`    ⚠ `) +
+      c.dim("Must match exactly as defined in your schema.prisma file"),
   );
   console.log("");
 
   const modelName = await p.text({
-    message: colors.bold.white("Enter Prisma model name:"),
+    message: c.bold.white("Enter Prisma model name:"),
     placeholder: "e.g., users, products, orders",
     validate: (input) => {
       if (!input || input.trim() === "") {
-        return colors.red(`${emoji.get("x")} Model name cannot be empty`);
+        return c.red(`✗ Model name cannot be empty`);
       }
     },
   });
 
   if (p.isCancel(modelName)) {
     console.log(
-      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+      c.yellow(`\n  ⚠ Operation cancelled by user.`),
     );
     process.exit(0);
   }
 
   console.log(
-    colors.green(`    ${emoji.get("white_check_mark")} Model name: `) +
-      colors.bold.white(modelName),
+    c.green(`    ✓ Model name: `) +
+      c.bold.white(modelName),
   );
   console.log("");
 
@@ -643,75 +506,29 @@ async function getPrismaModelName() {
 // SOFT DELETE APPROACH SELECTION
 // ═══════════════════════════════════════════════════════════════════════════
 async function selectSoftDeleteApproach() {
-  console.log(
-    colors.bold.white("Step 3.2") +
-      " " +
-      colors.gray("→") +
-      " " +
-      colors.white("Soft Delete Approach"),
-  );
-  console.log(
-    colors.dim.gray(
-      "───────────────────────────────────────────────────────────────",
-    ),
-  );
-  console.log("");
-
-  console.log(
-    colors.cyan(`  ${emoji.get("small_blue_diamond")} `) +
-      colors.white("Select soft delete approach"),
-  );
-  console.log("");
-  console.log(
-    "    " +
-      colors.bold.white("[1]") +
-      " " +
-      colors.accent("Timestamp") +
-      " " +
-      colors.dim("(deleted_at: null | Date)"),
-  );
-  console.log(
-    "        " +
-      colors.dim("Records are soft deleted by setting deleted_at to current timestamp"),
-  );
-  console.log("");
-  console.log(
-    "    " +
-      colors.bold.white("[2]") +
-      " " +
-      colors.accent("Boolean") +
-      " " +
-      colors.dim("(is_deleted: false | true)"),
-  );
-  console.log(
-    "        " +
-      colors.dim("Records are soft deleted by setting is_deleted to true"),
-  );
-  console.log("");
-
   const choice = await p.select({
-    message: colors.bold.white("Select soft delete approach:"),
+    message: c.bold.white("Select soft delete approach:"),
     options: [
       {
         value: "timestamp",
         label:
-          colors.accent("Timestamp") +
+          c.cyan("Timestamp") +
           " " +
-          colors.dim("(deleted_at: null | Date)"),
+          c.dim("(deleted_at: null | Date)"),
       },
       {
         value: "boolean",
         label:
-          colors.accent("Boolean") +
+          c.cyan("Boolean") +
           " " +
-          colors.dim("(is_deleted: false | true)"),
+          c.dim("(is_deleted: false | true)"),
       },
     ],
   });
 
   if (p.isCancel(choice)) {
     console.log(
-      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+      c.yellow(`\n  ⚠ Operation cancelled by user.`),
     );
     process.exit(0);
   }
@@ -719,8 +536,8 @@ async function selectSoftDeleteApproach() {
   const approachName = choice === "timestamp" ? "Timestamp (deleted_at)" : "Boolean (is_deleted)";
 
   console.log(
-    colors.green(`    ${emoji.get("white_check_mark")} Selected: `) +
-      colors.bold.white(approachName),
+    c.green(`    ✓ Selected: `) +
+      c.bold.white(approachName),
   );
   console.log("");
 
@@ -732,47 +549,47 @@ async function selectSoftDeleteApproach() {
 // ═══════════════════════════════════════════════════════════════════════════
 async function getServiceName() {
   console.log(
-    colors.bold.white("Step 3") +
+    c.bold.white("Step 3") +
       " " +
-      colors.gray("→") +
+      c.dim("→") +
       " " +
-      colors.white("Service Name"),
+      c.white("Service Name"),
   );
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
   console.log("");
 
   console.log(
-    colors.cyan(`  ${emoji.get("small_blue_diamond")} `) +
-      colors.white("Enter service name ") +
-      colors.dim("(snake_case or single lowercase word)"),
+    c.cyan(`  › `) +
+      c.white("Enter service name ") +
+      c.dim("(snake_case or single lowercase word)"),
   );
   console.log(
-    colors.dim("    Examples: ") +
-      colors.accent("payment") +
-      colors.dim(", ") +
-      colors.accent("user_profile") +
-      colors.dim(", ") +
-      colors.accent("order_item"),
+    c.dim("    Examples: ") +
+      c.cyan("payment") +
+      c.dim(", ") +
+      c.cyan("user_profile") +
+      c.dim(", ") +
+      c.cyan("order_item"),
   );
   console.log("");
 
   const name = await p.text({
-    message: colors.bold.white("Enter service name:"),
+    message: c.bold.white("Enter service name:"),
     placeholder: "e.g., payment, user_profile, order_item",
     validate: (input) => {
       if (!input || input.trim() === "") {
-        return colors.red(`${emoji.get("x")} Service name cannot be empty`);
+        return c.red(`✗ Service name cannot be empty`);
       }
 
       // Validate the input name (snake_case or single lowercase word)
       const snakeCaseRegex = /^[a-z]+(_[a-z]+)*$/;
       if (!snakeCaseRegex.test(input)) {
-        return colors.red(
-          `${emoji.get("x")} Service name must be in snake_case or a single lowercase word`,
+        return c.red(
+          `✗ Service name must be in snake_case or a single lowercase word`,
         );
       }
     },
@@ -780,14 +597,14 @@ async function getServiceName() {
 
   if (p.isCancel(name)) {
     console.log(
-      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+      c.yellow(`\n  ⚠ Operation cancelled by user.`),
     );
     process.exit(0);
   }
 
   console.log(
-    colors.green(`    ${emoji.get("white_check_mark")} Service name: `) +
-      colors.bold.white(name),
+    c.green(`    ✓ Service name: `) +
+      c.bold.white(name),
   );
   console.log("");
 
@@ -820,67 +637,67 @@ async function showConfigurationPreview(
   crudConfig = null,
 ) {
   console.log(
-    colors.bold.white("Step 5") +
+    c.bold.white("Step 5") +
       " " +
-      colors.gray("→") +
+      c.dim("→") +
       " " +
-      colors.white("Configuration Preview"),
+      c.white("Configuration Preview"),
   );
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
   console.log("");
   console.log(
-    colors.gradient1(
+    c.cyan(
       "  ╭───────────────────────────────────────────────────────────╮",
     ),
   );
   console.log(
-    colors.gradient2("  │  ") +
-      colors.bold.white("📊  Service Configuration") +
+    c.dim("  │  ") +
+      c.bold.white("📊  Service Configuration") +
       "                                " +
-      colors.gradient2("│"),
+      c.dim("│"),
   );
   console.log(
-    colors.gradient3(
+    c.dim(
       "  ╰───────────────────────────────────────────────────────────╯",
     ),
   );
   console.log("");
   console.log(
-    "    " + colors.gray("Service Name") + "       " + colors.cyan(name),
+    "    " + c.dim("Service Name") + "       " + c.cyan(name),
   );
   console.log(
-    "    " + colors.gray("Camel Case") + "         " + colors.accent(camelName),
+    "    " + c.dim("Camel Case") + "         " + c.cyan(camelName),
   );
   console.log(
     "    " +
-      colors.gray("Language") +
+      c.dim("Language") +
       "           " +
-      colors.accent(language === "ts" ? "TypeScript" : "JavaScript"),
+      c.cyan(language === "ts" ? "TypeScript" : "JavaScript"),
   );
 
   // Show CRUD configuration if enabled
   if (crudConfig && crudConfig.enabled) {
     console.log(
       "    " +
-        colors.gray("CRUD APIs") +
+        c.dim("CRUD APIs") +
         "          " +
-        colors.green("Enabled"),
+        c.green("Enabled"),
     );
     console.log(
       "    " +
-        colors.gray("Prisma Model") +
+        c.dim("Prisma Model") +
         "       " +
-        colors.accent(crudConfig.modelName),
+        c.cyan(crudConfig.modelName),
     );
     console.log(
       "    " +
-        colors.gray("Soft Delete") +
+        c.dim("Soft Delete") +
         "        " +
-        colors.accent(
+        c.cyan(
           crudConfig.softDeleteApproach === "timestamp"
             ? "Timestamp (deleted_at)"
             : "Boolean (is_deleted)"
@@ -889,93 +706,93 @@ async function showConfigurationPreview(
   } else {
     console.log(
       "    " +
-        colors.gray("CRUD APIs") +
+        c.dim("CRUD APIs") +
         "          " +
-        colors.dim("Disabled (Empty templates)"),
+        c.dim("Disabled (Empty templates)"),
     );
   }
 
   if (folderStructure === "current") {
     console.log(
       "    " +
-        colors.gray("Structure") +
+        c.dim("Structure") +
         "          " +
-        colors.white("Separate (Distributed folders)"),
+        c.white("Separate (Distributed folders)"),
     );
     console.log("");
-    console.log("    " + colors.gray("Files to create:"));
+    console.log("    " + c.dim("Files to create:"));
     console.log(
       "      " +
-        colors.dim("├─") +
+        c.dim("├─") +
         " " +
-        colors.cyan(`src/services/${name}.service.js`),
+        c.cyan(`src/services/${name}.service.js`),
     );
     console.log(
       "      " +
-        colors.dim("├─") +
+        c.dim("├─") +
         " " +
-        colors.cyan(`src/validations/${name}.validation.js`),
+        c.cyan(`src/validations/${name}.validation.js`),
     );
     console.log(
       "      " +
-        colors.dim("├─") +
+        c.dim("├─") +
         " " +
-        colors.cyan(`src/controllers/${name}.controller.js`),
+        c.cyan(`src/controllers/${name}.controller.js`),
     );
     console.log(
       "      " +
-        colors.dim("└─") +
+        c.dim("└─") +
         " " +
-        colors.cyan(`src/routes/v1/${name}.routes.js`),
+        c.cyan(`src/routes/v1/${name}.routes.js`),
     );
   } else {
     console.log(
       "    " +
-        colors.gray("Structure") +
+        c.dim("Structure") +
         "          " +
-        colors.white("Modular (All-in-one folder)"),
+        c.white("Modular (All-in-one folder)"),
     );
     console.log("");
-    console.log("    " + colors.gray("Files to create:"));
+    console.log("    " + c.dim("Files to create:"));
     console.log(
-      "      " + colors.dim("└─") + " " + colors.cyan(`src/modules/${name}/`),
+      "      " + c.dim("└─") + " " + c.cyan(`src/modules/${name}/`),
     );
     console.log(
-      "          " + colors.dim("├─") + " " + colors.cyan(`${name}.service.js`),
-    );
-    console.log(
-      "          " +
-        colors.dim("├─") +
-        " " +
-        colors.cyan(`${name}.validation.js`),
+      "          " + c.dim("├─") + " " + c.cyan(`${name}.service.js`),
     );
     console.log(
       "          " +
-        colors.dim("├─") +
+        c.dim("├─") +
         " " +
-        colors.cyan(`${name}.controller.js`),
+        c.cyan(`${name}.validation.js`),
     );
     console.log(
-      "          " + colors.dim("└─") + " " + colors.cyan(`${name}.routes.js`),
+      "          " +
+        c.dim("├─") +
+        " " +
+        c.cyan(`${name}.controller.js`),
+    );
+    console.log(
+      "          " + c.dim("└─") + " " + c.cyan(`${name}.routes.js`),
     );
   }
 
   console.log("");
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
   console.log("");
 
   const proceed = await p.confirm({
-    message: colors.bold.white("Proceed with scaffolding?"),
+    message: c.bold.white("Proceed with scaffolding?"),
     initialValue: false,
   });
 
   if (p.isCancel(proceed) || !proceed) {
     console.log(
-      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+      c.yellow(`\n  ⚠ Operation cancelled by user.`),
     );
     process.exit(0);
   }
@@ -1863,14 +1680,14 @@ async function generateFiles(
   const ext = language === "ts" ? ".ts" : ".js";
   const pascalName = snakeToPascal(name);
   console.log(
-    colors.bold.white("Step 6") +
+    c.bold.white("Step 6") +
       " " +
-      colors.gray("→") +
+      c.dim("→") +
       " " +
-      colors.white("Generating Files"),
+      c.white("Generating Files"),
   );
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
@@ -1907,7 +1724,7 @@ async function generateFiles(
         : getServiceTemplate(folderStructure);
     }
     await fs.writeFile(serviceFile, serviceContent);
-    printSuccess(`Created: ${colors.cyan(serviceFile)}`);
+    printSuccess(`Created: ${c.cyan(serviceFile)}`);
     filesCreated.push(serviceFile);
 
     // Create the validation file
@@ -1924,7 +1741,7 @@ async function generateFiles(
       validationContent = language === "ts" ? getValidationTemplateTS() : getValidationTemplate();
     }
     await fs.writeFile(validationFile, validationContent);
-    printSuccess(`Created: ${colors.cyan(validationFile)}`);
+    printSuccess(`Created: ${c.cyan(validationFile)}`);
     filesCreated.push(validationFile);
 
     // Create the controller file
@@ -1943,7 +1760,7 @@ async function generateFiles(
         : getControllerTemplate(name, camelName, folderStructure);
     }
     await fs.writeFile(controllerFile, controllerContent);
-    printSuccess(`Created: ${colors.cyan(controllerFile)}`);
+    printSuccess(`Created: ${c.cyan(controllerFile)}`);
     filesCreated.push(controllerFile);
 
     // Create the router file
@@ -1959,7 +1776,7 @@ async function generateFiles(
         : getRouterTemplate(name, camelName, folderStructure);
     }
     await fs.writeFile(routerFile, routerContent);
-    printSuccess(`Created: ${colors.cyan(routerFile)}`);
+    printSuccess(`Created: ${c.cyan(routerFile)}`);
     filesCreated.push(routerFile);
   } else {
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1971,7 +1788,7 @@ async function generateFiles(
     // Create the module folder
     await fs.mkdir(moduleFolder, { recursive: true });
 
-    printInfo(`Creating module folder: ${colors.cyan(moduleFolder)}`);
+    printInfo(`Creating module folder: ${c.cyan(moduleFolder)}`);
     console.log("");
 
     // Create the service file
@@ -1987,7 +1804,7 @@ async function generateFiles(
         : getServiceTemplate(folderStructure);
     }
     await fs.writeFile(serviceFile, serviceContent);
-    printSuccess(`Created: ${colors.cyan(serviceFile)}`);
+    printSuccess(`Created: ${c.cyan(serviceFile)}`);
     filesCreated.push(serviceFile);
 
     // Create the validation file
@@ -2001,7 +1818,7 @@ async function generateFiles(
       validationContent = language === "ts" ? getValidationTemplateTS() : getValidationTemplate();
     }
     await fs.writeFile(validationFile, validationContent);
-    printSuccess(`Created: ${colors.cyan(validationFile)}`);
+    printSuccess(`Created: ${c.cyan(validationFile)}`);
     filesCreated.push(validationFile);
 
     // Create the controller file
@@ -2017,7 +1834,7 @@ async function generateFiles(
         : getControllerTemplate(name, camelName, folderStructure);
     }
     await fs.writeFile(controllerFile, controllerContent);
-    printSuccess(`Created: ${colors.cyan(controllerFile)}`);
+    printSuccess(`Created: ${c.cyan(controllerFile)}`);
     filesCreated.push(controllerFile);
 
     // Create the router file
@@ -2033,7 +1850,7 @@ async function generateFiles(
         : getRouterTemplate(name, camelName, folderStructure);
     }
     await fs.writeFile(routerFile, routerContent);
-    printSuccess(`Created: ${colors.cyan(routerFile)}`);
+    printSuccess(`Created: ${c.cyan(routerFile)}`);
     filesCreated.push(routerFile);
   }
 
@@ -2051,49 +1868,49 @@ function printSuccessSummary(name, folderStructure, filesCreated) {
   console.log("");
   console.log("");
   console.log(
-    colors.gradient1(
+    c.cyan(
       "╔═══════════════════════════════════════════════════════════════╗",
     ),
   );
   console.log(
-    colors.gradient2(
+    c.dim(
       "║                                                               ║",
     ),
   );
   console.log(
-    colors.gradient2("║             ") +
-      colors.bold.green(
-        `${emoji.get("white_check_mark")}  O P E R A T I O N   S U C C E S S`,
+    c.dim("║             ") +
+      c.bold.green(
+        `✓  O P E R A T I O N   S U C C E S S`,
       ) +
       "              " +
-      colors.gradient2("║"),
+      c.dim("║"),
   );
   console.log(
-    colors.gradient2(
+    c.dim(
       "║                                                               ║",
     ),
   );
   console.log(
-    colors.gradient1(
+    c.cyan(
       "╚═══════════════════════════════════════════════════════════════╝",
     ),
   );
   console.log("");
   console.log(
     "  " +
-      colors.gradient3(emoji.get("small_blue_diamond")) +
+      c.dim("›") +
       " " +
-      colors.gray("Service Name") +
+      c.dim("Service Name") +
       "         " +
-      colors.bold(colors.accent(name)),
+      c.bold(c.cyan(name)),
   );
   console.log(
     "  " +
-      colors.gradient3(emoji.get("small_blue_diamond")) +
+      c.dim("›") +
       " " +
-      colors.gray("Folder Structure") +
+      c.dim("Folder Structure") +
       "     " +
-      colors.bold.cyan(
+      c.bold.cyan(
         folderStructure === "current"
           ? "Separate (Distributed)"
           : "Modular (All-in-one)",
@@ -2101,21 +1918,21 @@ function printSuccessSummary(name, folderStructure, filesCreated) {
   );
   console.log(
     "  " +
-      colors.gradient3(emoji.get("small_blue_diamond")) +
+      c.dim("›") +
       " " +
-      colors.gray("Files Created") +
+      c.dim("Files Created") +
       "        " +
-      colors.bold.white(`${filesCreated.length} files`),
+      c.bold.white(`${filesCreated.length} files`),
   );
   console.log("");
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
-  console.log(colors.bold.white("  Files Created"));
+  console.log(c.bold.white("  Files Created"));
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
@@ -2124,74 +1941,74 @@ function printSuccessSummary(name, folderStructure, filesCreated) {
   for (const file of filesCreated) {
     console.log(
       "  " +
-        colors.cyan(emoji.get("small_orange_diamond")) +
+        c.cyan("🔸") +
         " " +
-        colors.dim(file),
+        c.dim(file),
     );
   }
 
   console.log("");
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
-  console.log(colors.bold.white("  Next Steps"));
+  console.log(c.bold.white("  Next Steps"));
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
   console.log("");
   console.log(
     "  " +
-      colors.bold.white("1.") +
+      c.bold.white("1.") +
       " " +
-      colors.gray("Import and register the route in"),
+      c.dim("Import and register the route in"),
   );
-  console.log("     " + colors.cyan("src/routes/index.js"));
+  console.log("     " + c.cyan("src/routes/index.js"));
   console.log("");
   console.log(
     "  " +
-      colors.bold.white("2.") +
+      c.bold.white("2.") +
       " " +
-      colors.gray("Implement your service logic in"),
+      c.dim("Implement your service logic in"),
   );
-  console.log("     " + colors.cyan(serviceFile));
+  console.log("     " + c.cyan(serviceFile));
   console.log("");
   console.log(
     "  " +
-      colors.bold.white("3.") +
+      c.bold.white("3.") +
       " " +
-      colors.gray("Add validation schemas in"),
+      c.dim("Add validation schemas in"),
   );
-  console.log("     " + colors.cyan(validationFile));
+  console.log("     " + c.cyan(validationFile));
   console.log("");
   console.log(
     "  " +
-      colors.bold.white("4.") +
+      c.bold.white("4.") +
       " " +
-      colors.gray("Create controller methods in"),
+      c.dim("Create controller methods in"),
   );
-  console.log("     " + colors.cyan(controllerFile));
+  console.log("     " + c.cyan(controllerFile));
   console.log("");
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
   console.log(
-    colors.dim("  Tool: ") +
-      colors.accent("scaffold-service") +
-      colors.dim(" v2.0.0 | ") +
-      colors.gray("© 2026 Abubakar Shaikh"),
+    c.dim("  Tool: ") +
+      c.cyan("skelr") +
+      c.dim(" v2.0.0 | ") +
+      c.dim("© 2026 Abubakar Shaikh"),
   );
   console.log(
-    colors.dim("  Repo: ") +
-      colors.cyan("github.com/abubakar-shaikh-dev/scaffold-service.git"),
+    c.dim("  Repo: ") +
+      c.cyan("github.com/abubakar-shaikh-dev/skelr.git"),
   );
   console.log(
-    colors.dim.gray(
+    c.dim.gray(
       "───────────────────────────────────────────────────────────────",
     ),
   );
@@ -2213,7 +2030,7 @@ async function main() {
     const validationErrors = validateCliArgs(cliArgs);
     if (validationErrors.length > 0) {
       for (const error of validationErrors) {
-        console.log(colors.red(`  ${emoji.get("x")} ${error}`));
+        console.log(c.red(`  ✗ ${error}`));
       }
       console.log("");
       printHelp();
@@ -2223,20 +2040,24 @@ async function main() {
     // Non-interactive mode: skip banner if all args provided
     const isNonInteractive = cliArgs.name && cliArgs.structure;
 
+    // Load config file
+    let config = null;
     if (!isNonInteractive) {
       // Print banner only in interactive mode
       printBanner();
+      config = loadConfig();
     } else {
       console.log("");
       console.log(
-        colors.gradient1(`  ${emoji.get("zap")} `) +
-          colors.bold.white("Quick Mode") +
-          colors.dim(" - Generating service files..."),
+        c.cyan(`  ⚡ `) +
+          c.bold.white("Quick Mode") +
+          c.dim(" - Generating service files..."),
       );
       console.log("");
+      config = loadConfig();
     }
 
-    // Step 1: Select folder structure (skip if provided via CLI)
+    // Step 1: Select folder structure (skip if provided via CLI or config)
     let folderStructure;
     if (cliArgs.structure) {
       // Normalize structure value
@@ -2253,26 +2074,45 @@ async function main() {
             ? "Separate Folder Structure"
             : "Modular Folder Structure";
         console.log(
-          colors.green(`  ${emoji.get("white_check_mark")} Structure: `) +
-            colors.bold.white(structureName) +
-            colors.dim(" (from CLI)"),
+          c.green(`  ✓ Structure: `) +
+            c.bold.white(structureName) +
+            c.dim(" (from CLI)"),
         );
       }
+    } else if (config && config.structure) {
+      folderStructure = config.structure;
+      const structureName =
+        folderStructure === "current"
+          ? "Separate Folder Structure"
+          : "Modular Folder Structure";
+      console.log(
+        c.green(`  ✓ Structure: `) +
+          c.bold.white(structureName) +
+          c.dim(" (from config)"),
+      );
     } else {
       folderStructure = await selectFolderStructure();
     }
 
-    // Step 2: Select language (skip if --typescript provided via CLI)
+    // Step 2: Select language (skip if --typescript provided via CLI or config)
     let language;
     if (cliArgs.typescript) {
       language = "ts";
       if (!isNonInteractive) {
         console.log(
-          colors.green(`  ${emoji.get("white_check_mark")} Language: `) +
-            colors.bold.white("TypeScript") +
-            colors.dim(" (from CLI)"),
+          c.green(`  ✓ Language: `) +
+            c.bold.white("TypeScript") +
+            c.dim(" (from CLI)"),
         );
       }
+    } else if (config && config.language) {
+      language = config.language;
+      const langName = language === "ts" ? "TypeScript" : "JavaScript";
+      console.log(
+        c.green(`  ✓ Language: `) +
+          c.bold.white(langName) +
+          c.dim(" (from config)"),
+      );
     } else if (isNonInteractive) {
       // Default to JS in non-interactive mode if --typescript not specified
       language = "js";
@@ -2312,9 +2152,9 @@ async function main() {
       name = cliArgs.name.toLowerCase();
       if (!isNonInteractive) {
         console.log(
-          colors.green(`  ${emoji.get("white_check_mark")} Service name: `) +
-            colors.bold.white(name) +
-            colors.dim(" (from CLI)"),
+          c.green(`  ✓ Service name: `) +
+            c.bold.white(name) +
+            c.dim(" (from CLI)"),
         );
         console.log("");
       }
@@ -2351,8 +2191,8 @@ async function main() {
       errorExit("Prompt couldn't be rendered in the current environment");
     } else if (error.name === "ExitPromptError") {
       console.log(
-        colors.yellow(
-          `\n  ${emoji.get("warning")} Operation cancelled by user.`,
+        c.yellow(
+          `\n  ⚠ Operation cancelled by user.`,
         ),
       );
       process.exit(0);

@@ -1,7 +1,7 @@
 {
   "name": "skelr",
-  "version": "2.1.0",
-  "description": "CLI tool to scaffold service files with separate or modular folder structures",
+  "version": "3.0.0",
+  "description": "Modern CLI tool to scaffold Express service files with CRUD generation",
   "main": "src/index.js",
   "type": "module",
   "bin": {
@@ -39,12 +39,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/abubakar-shaikh-dev/scaffold-service.git"
+    "url": "git+https://github.com/abubakar-shaikh-dev/skelr.git"
   },
   "bugs": {
-    "url": "https://github.com/abubakar-shaikh-dev/scaffold-service/issues"
+    "url": "https://github.com/abubakar-shaikh-dev/skelr/issues"
   },
-  "homepage": "https://github.com/abubakar-shaikh-dev/scaffold-service#readme",
+  "homepage": "https://github.com/abubakar-shaikh-dev/skelr#readme",
   "engines": {
     "node": ">=18.0.0"
   },

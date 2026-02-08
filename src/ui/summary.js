@@ -130,11 +130,11 @@ export function printSuccessSummary(name, folderStructure, filesCreated) {
   console.log(
     c.dim("  Tool: ") +
       c.cyan("skelr") +
-      c.dim(" v2.1.0 | ") +
+      c.dim(" v3.0.0 | ") +
       c.dim("© 2026 Abubakar Shaikh"),
   );
   console.log(
-    c.dim("  Repo: ") + c.cyan("github.com/abubakar-shaikh-dev/skelr.git"),
+    c.dim("  Repo: ") + c.cyan("github.com/abubakar-shaikh-dev/skelr"),
   );
   console.log(
     c.dim.gray(

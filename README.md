@@ -1,196 +1,302 @@
 <div align="center">
 
-# scaffold-service
+```
+███████╗██╗  ██╗███████╗██╗     ██████╗ 
+██╔════╝██║ ██╔╝██╔════╝██║     ██╔══██╗
+███████╗█████╔╝ █████╗  ██║     ██████╔╝
+╚════██║██╔═██╗ ██╔══╝  ██║     ██╔══██╗
+███████║██║  ██╗███████╗███████╗██║  ██║
+╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝
+```
 
-**The modern, interactive CLI for generating production-ready service architectures.**
+**Service Scaffolding CLI — Generate production-ready service files in seconds.**
 
-[![npm version](https://img.shields.io/npm/v/scaffold-service.svg?style=flat-square&color=00afff)](https://www.npmjs.com/package/scaffold-service)
+[![npm version](https://img.shields.io/npm/v/skelr.svg?style=flat-square&color=00afff)](https://www.npmjs.com/package/skelr)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/node/v/scaffold-service.svg?style=flat-square)](https://nodejs.org)
-[![Downloads](https://img.shields.io/npm/dt/scaffold-service.svg?style=flat-square)](https://www.npmjs.com/package/scaffold-service)
+[![Node.js Version](https://img.shields.io/node/v/skelr.svg?style=flat-square)](https://nodejs.org)
+[![Downloads](https://img.shields.io/npm/dt/skelr.svg?style=flat-square)](https://www.npmjs.com/package/skelr)
 
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Structures](#-folder-structures) • [Contributing](#-contributing)
+[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Configuration](#-configuration) • [API](#-api)
 
 </div>
 
 ---
 
-## 📖 Overview
+> ⚠️ **Repository Renamed**: This project has moved from `scaffold-service` to `skelr`.
+> 
+> - **Old (Deprecated)**: https://github.com/abubakar-shaikh-dev/scaffold-service
+> - **New**: https://github.com/abubakar-shaikh-dev/skelr
+> 
+> Please update your bookmarks and git remotes.
 
-**scaffold-service** is a powerful CLI tool designed to eliminate boilerplate fatigue. Whether you prefer a **distributed** (layer-based) architecture or a **modular** (component-based) one, this tool generates consistent, ES6+ ready code in seconds.
-
-Top-tier engineering teams use consistent patterns. `scaffold-service` enforces these patterns automatically, ensuring your services, controllers, validations, and routes are always aligned.
+---
 
 ## ✨ Features
 
-- **🚀 Two Architecture Modes**: Seamless support for both **Layered** (Separate) and **Modular** (Domain-driven) structures.
-- **📘 TypeScript Support**: Generate `.ts` files with proper type annotations and Express types.
-- **⚡ Non-Interactive Mode**: Skip prompts with CLI flags for automation and scripting.
-- **🎨 Modern CLI Experience**: Beautiful, color-coded interactive prompts using `inquirer`.
-- **⚡ ES6+ & Zod Ready**: Generates modern JavaScript/TypeScript with `import/export` syntax and pre-configured `zod` validation stubs.
-- **📦 Production Best Practices**: Includes standard patterns for Controllers, Services, and Routes out of the box.
-- **🛡️ Type-Safe Validations**: Pre-wired validation middleware integration with Zod type inference.
+| Feature | Description |
+|---------|-------------|
+| 🏗️ **Two Architecture Modes** | Choose between **Separate** (layer-based) or **Modular** (domain-driven) structures |
+| 📘 **TypeScript Support** | Generate `.ts` files with proper type annotations |
+| ⚡ **CRUD Generation** | Auto-generate complete Create, Read, Update, Delete operations |
+| 🔧 **Config File Support** | Pre-configure defaults with `.skelrrc.json` |
+| 🚀 **Non-Interactive Mode** | Skip prompts with CLI flags for automation |
+| 🎨 **Beautiful CLI** | Interactive prompts with color-coded output |
+| 📦 **Zod Validations** | Pre-configured validation schemas with type inference |
+| 🗑️ **Soft Delete** | Built-in soft delete support (timestamp or boolean) |
+
+---
 
 ## 📦 Installation
 
-You can use the tool directly via `npx` (recommended) or install it globally.
-
-### Recommended: Run with npx
-No installation required. Always runs the latest version.
+### Run with npx (Recommended)
 ```bash
-npx scaffold-service
+npx skelr
 ```
 
 ### Global Installation
-If you use it frequently, install it globally:
 ```bash
-npm install -g scaffold-service
+npm install -g skelr
 ```
 
-## 🚀 Usage
+---
 
-Navigate to your project root and run the command:
+## 🚀 Quick Start
 
-```bash
-scaffold-service
-```
+### Interactive Mode
 
-### The Interactive Flow
-
-The CLI will guide you through a 4-step process:
-
-1.  **Select Structure**: Choose between `Separate` or `Modular` architecture.
-2.  **Select Language**: Choose between `JavaScript` or `TypeScript`.
-3.  **Name Service**: Enter a `snake_case` name (e.g., `user_profile`, `payment_gateway`).
-4.  **Confirm**: Review the preview and confirm generation.
-
-```text
-Step 1 → Folder Structure
-  ▸ Select folder structure type
-    [1] Separate Folder Structure (Distributed across folders)
-    [2] Modular Folder Structure (All-in-one folder)
-
-Step 2 → Language
-  ▸ Select programming language
-    [1] JavaScript (.js files)
-    [2] TypeScript (.ts files with type annotations)
-
-Step 3 → Service Name
-  ▸ Enter service name: payment_methods
-
-Step 4 → Configuration Preview
-  📊 Service Configuration
-    Service Name: payment_methods
-    Language:     TypeScript
-    Structure:    Modular
-  
-  ✓ Proceed with creation? (Y/n)
-```
-
-### Non-Interactive Mode (CLI Flags)
-
-For automation and scripting, skip prompts entirely with CLI flags:
+Simply run the command and follow the prompts:
 
 ```bash
-# Generate JavaScript service with modular structure
-scaffold-service --name=payment --structure=modular
+npx skelr
+```
 
-# Generate TypeScript service with separate structure
-scaffold-service -n user_profile -s separate -ts
+The CLI will guide you through:
+1. **Folder Structure** — Separate or Modular
+2. **Language** — JavaScript or TypeScript
+3. **CRUD APIs** — Generate pre-made CRUD operations (optional)
+4. **Service Name** — Enter a snake_case name
+5. **Preview & Confirm** — Review and create files
+
+### Non-Interactive Mode
+
+Skip all prompts with CLI flags:
+
+```bash
+# TypeScript + Modular structure
+skelr --name=payment --structure=modular --typescript
+
+# JavaScript + Separate structure
+skelr -n user_profile -s separate
 
 # Show help
-scaffold-service --help
+skelr --help
 ```
 
-**Available Flags:**
+---
+
+## 🎛️ CLI Options
+
 | Flag | Short | Description |
 |------|-------|-------------|
-| `--name <name>` | `-n` | Service name (snake_case) |
+| `--name <name>` | `-n` | Service name in snake_case |
 | `--structure <type>` | `-s` | `separate` or `modular` |
 | `--typescript` | `-ts` | Generate TypeScript files |
-| `--help` | `-h` | Show usage information |
+| `--help` | `-h` | Show help message |
+
+---
+
+## ⚙️ Configuration
+
+Create a `.skelrrc.json` file in your project root to pre-configure defaults:
+
+```json
+{
+  "structure": "modular",
+  "language": "ts",
+  "crud": {
+    "enabled": true,
+    "soft_delete": "timestamp"
+  }
+}
+```
+
+### Configuration Options
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| `structure` | `"separate"` \| `"modular"` | Default folder structure |
+| `language` | `"js"` \| `"ts"` | Default programming language |
+| `crud.enabled` | `true` \| `false` | Enable CRUD generation by default |
+| `crud.soft_delete` | `"timestamp"` \| `"boolean"` | Soft delete approach |
+
+When a config file is detected, skelr will use these values as defaults (you can still override via CLI flags).
+
+---
 
 ## 📂 Folder Structures
 
-We support the two most common Node.js architectural patterns.
+### Option 1: Separate (Layer-Based)
 
-### Option 1: Separate (Layered)
-*Best for: Traditional MVC applications, large teams with strict separation of concerns.*
+*Best for: Traditional MVC, large teams with strict separation of concerns*
 
-```text
+```
 src/
 ├── controllers/
-│   └── payment_methods.controller.js
+│   └── payment.controller.ts
 ├── services/
-│   └── payment_methods.service.js
+│   └── payment.service.ts
 ├── validations/
-│   └── payment_methods.validation.js
+│   └── payment.validation.ts
 └── routes/
     └── v1/
-        └── payment_methods.routes.js
+        └── payment.routes.ts
 ```
 
 ### Option 2: Modular (Domain-Driven)
-*Best for: Microservices, distinct features, and maintaining high cohesion.*
 
-```text
+*Best for: Microservices, feature-based organization, high cohesion*
+
+```
 src/
 └── modules/
-    └── payment_methods/
-        ├── payment_methods.controller.js
-        ├── payment_methods.service.js
-        ├── payment_methods.validation.js
-        └── payment_methods.routes.js
+    └── payment/
+        ├── payment.controller.ts
+        ├── payment.service.ts
+        ├── payment.validation.ts
+        └── payment.routes.ts
 ```
 
-## 🛠️ Post-Scaffolding Steps
+---
 
-After generating your files, don't forget to register your new route!
+## 🔥 CRUD Generation
 
-1.  Open your main route entry file (e.g., `src/routes/index.js` or `app.js`).
-2.  Import and use the new route:
+When you enable CRUD APIs, skelr generates complete implementations:
+
+### Generated Endpoints
+| Method | Route | Description |
+|--------|-------|-------------|
+| `POST` | `/` | Create new record |
+| `GET` | `/` | Get all records (paginated) |
+| `GET` | `/:id` | Get record by ID |
+| `PUT` | `/:id` | Update record by ID |
+| `DELETE` | `/:id` | Soft delete record by ID |
+
+### Features Included
+- ✅ Prisma ORM integration
+- ✅ Zod request validation
+- ✅ Pagination with search & sorting
+- ✅ Duplicate checking
+- ✅ Soft delete (timestamp or boolean)
+- ✅ Proper error handling with `http-errors`
+
+---
+
+## 🛠️ Post-Scaffolding
+
+After generating files, register your new route:
 
 ```javascript
-import paymentMethodsRoutes from './modules/payment_methods/payment_methods.routes.js'; // or from routes/v1/...
+// src/routes/index.js
+import paymentRoutes from './routes/v1/payment.routes.js';
+// or for modular:
+import paymentRoutes from './modules/payment/payment.routes.js';
 
-// ...
-router.use('/payment-methods', paymentMethodsRoutes);
+router.use('/payments', paymentRoutes);
 ```
+
+---
+
+## 📚 API (Programmatic Usage)
+
+skelr can also be used programmatically in your own scripts:
+
+```javascript
+import { generateFiles, snakeToCamel, snakeToPascal } from 'skelr';
+
+// Generate files programmatically
+await generateFiles('payment', 'payment', 'modular', 'ts', {
+  enabled: true,
+  modelName: 'payments',
+  softDeleteApproach: 'timestamp'
+});
+
+// Use utility functions
+const camelCase = snakeToCamel('user_profile'); // 'userProfile'
+const pascalCase = snakeToPascal('user_profile'); // 'UserProfile'
+```
+
+### Exports
+
+```javascript
+// CLI
+import { main, parseCliArgs, validateCliArgs, printHelp } from 'skelr';
+
+// Config
+import { loadConfig, CONFIG_FILE } from 'skelr';
+
+// Generators
+import { generateFiles } from 'skelr';
+
+// Utils
+import { snakeToCamel, snakeToPascal, c, printSuccess, printInfo, errorExit } from 'skelr';
+
+// Templates (for customization)
+import { getServiceTemplate, getCrudServiceTemplate, /* ... */ } from 'skelr';
+```
+
+---
 
 ## 💻 Development
 
-Want to contribute or customize the tool?
+```bash
+# Clone the repository
+git clone https://github.com/abubakar-shaikh-dev/skelr.git
 
-1.  Clone the repo:
-    ```bash
-    git clone https://github.com/abubakar-shaikh-dev/scaffold-service.git
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Run locally:
-    ```bash
-    npm start
-    ```
+# Install dependencies
+npm install
+
+# Run locally
+npm start
+
+# Or run directly
+node bin/skelr.js
+```
+
+### Project Structure
+
+```
+skelr/
+├── bin/skelr.js           # CLI entry point
+├── src/
+│   ├── index.js           # Library exports
+│   ├── cli/               # Argument parsing, help, main
+│   ├── config/            # .skelrrc.json loader
+│   ├── generators/        # File generation logic
+│   ├── prompts/           # Interactive prompts
+│   ├── templates/         # JS & TS templates
+│   ├── ui/                # Banner, preview, summary
+│   └── utils/             # Helpers & utilities
+└── package.json
+```
+
+---
 
 ## 🤝 Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
 
 ## 👤 Author
 
 **ABUBAKAR SHAIKH**
 
 - GitHub: [@abubakar-shaikh-dev](https://github.com/abubakar-shaikh-dev)
-- Repository: [scaffold-service](https://github.com/abubakar-shaikh-dev/scaffold-service)
+- Repository: [skelr](https://github.com/abubakar-shaikh-dev/skelr)
 
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.

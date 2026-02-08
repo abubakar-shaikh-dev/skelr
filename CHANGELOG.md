@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-02-08
+
+### Added
+
+- **CRUD API Generation**: Generate complete Create, Read, Update, Delete operations
+  - Prisma ORM integration with configurable model names
+  - Pagination, search, and sorting support
+  - Soft delete with timestamp or boolean approach
+  - Duplicate checking and proper error handling
+- **Configuration File Support**: Pre-configure defaults with `.skelrrc.json`
+  - Set default folder structure, language, and CRUD options
+  - Auto-detected from project root
+- **ASCII Banner**: Beautiful ASCII art logo in CLI startup
+- **Programmatic API**: Use skelr as a library in your own scripts
+  - Export all templates, generators, and utility functions
+
+### Changed
+
+- **Major Architecture Refactor**: Restructured from single file to modular library
+  - Organized into `src/` with logical subdirectories
+  - Separated CLI, config, generators, prompts, templates, UI, and utils
+  - Added proper npm exports map for subpath imports
+- Updated CLI entry point to `bin/skelr.js`
+- Improved interactive prompts with more detailed explanations
+- Enhanced success summary with next steps guidance
+
+### Technical
+
+- 24 modular files across 8 directories
+- Proper barrel exports for each module
+- Package exports for programmatic usage
+
+### Migration
+
+> ⚠️ **Repository Renamed**: This project has been renamed from `scaffold-service` to `skelr`.
+> 
+> - **Old (Deprecated)**: https://github.com/abubakar-shaikh-dev/scaffold-service
+> - **New**: https://github.com/abubakar-shaikh-dev/skelr
+> 
+> The npm package name remains `skelr`. Please update your bookmarks and git remotes.
+
+---
+
 ## [2.1.0] - 2026-02-06
 
 ### Added

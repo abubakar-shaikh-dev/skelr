@@ -15,7 +15,7 @@ export function printBanner() {
   console.log(
     c.dim("  Service scaffolding CLI") +
       c.dim(" • ") +
-      c.dim("v2.1.0")
+      c.dim("v3.0.0")
   );
   console.log();
 }

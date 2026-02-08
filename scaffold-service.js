@@ -520,6 +520,214 @@ async function selectLanguage() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// CRUD API SELECTION
+// ═══════════════════════════════════════════════════════════════════════════
+async function askForCrudApis() {
+  console.log(
+    colors.bold.white("Step 3") +
+      " " +
+      colors.gray("→") +
+      " " +
+      colors.white("Pre-made CRUD APIs"),
+  );
+  console.log(
+    colors.dim.gray(
+      "───────────────────────────────────────────────────────────────",
+    ),
+  );
+  console.log("");
+
+  console.log(
+    colors.cyan(`  ${emoji.get("small_blue_diamond")} `) +
+      colors.white("Would you like pre-made CRUD APIs?"),
+  );
+  console.log(
+    colors.dim(
+      "    This generates complete Create, Read, Update, Delete operations",
+    ),
+  );
+  console.log("");
+  console.log(
+    "    " +
+      colors.bold.white("APIs included:") +
+      " " +
+      colors.dim("POST, GET (all), GET (by id), PUT (by id), DELETE (by id)"),
+  );
+  console.log("");
+
+  const choice = await p.confirm({
+    message: colors.bold.white("Generate pre-made CRUD APIs?"),
+    initialValue: false,
+  });
+
+  if (p.isCancel(choice)) {
+    console.log(
+      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+    );
+    process.exit(0);
+  }
+
+  console.log(
+    colors.green(`    ${emoji.get("white_check_mark")} Selected: `) +
+      colors.bold.white(choice ? "Yes - Generate CRUD APIs" : "No - Empty templates"),
+  );
+  console.log("");
+
+  return choice;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PRISMA MODEL NAME INPUT
+// ═══════════════════════════════════════════════════════════════════════════
+async function getPrismaModelName() {
+  console.log(
+    colors.bold.white("Step 3.1") +
+      " " +
+      colors.gray("→") +
+      " " +
+      colors.white("Prisma Model Name"),
+  );
+  console.log(
+    colors.dim.gray(
+      "───────────────────────────────────────────────────────────────",
+    ),
+  );
+  console.log("");
+
+  console.log(
+    colors.cyan(`  ${emoji.get("small_blue_diamond")} `) +
+      colors.white("Enter Prisma model name ") +
+      colors.dim("(exact name from prisma schema file)"),
+  );
+  console.log(
+    colors.dim("    Examples: ") +
+      colors.accent("users") +
+      colors.dim(", ") +
+      colors.accent("products") +
+      colors.dim(", ") +
+      colors.accent("orders"),
+  );
+  console.log(
+    colors.yellow(`    ${emoji.get("warning")} `) +
+      colors.dim("Must match exactly as defined in your schema.prisma file"),
+  );
+  console.log("");
+
+  const modelName = await p.text({
+    message: colors.bold.white("Enter Prisma model name:"),
+    placeholder: "e.g., users, products, orders",
+    validate: (input) => {
+      if (!input || input.trim() === "") {
+        return colors.red(`${emoji.get("x")} Model name cannot be empty`);
+      }
+    },
+  });
+
+  if (p.isCancel(modelName)) {
+    console.log(
+      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+    );
+    process.exit(0);
+  }
+
+  console.log(
+    colors.green(`    ${emoji.get("white_check_mark")} Model name: `) +
+      colors.bold.white(modelName),
+  );
+  console.log("");
+
+  return modelName;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SOFT DELETE APPROACH SELECTION
+// ═══════════════════════════════════════════════════════════════════════════
+async function selectSoftDeleteApproach() {
+  console.log(
+    colors.bold.white("Step 3.2") +
+      " " +
+      colors.gray("→") +
+      " " +
+      colors.white("Soft Delete Approach"),
+  );
+  console.log(
+    colors.dim.gray(
+      "───────────────────────────────────────────────────────────────",
+    ),
+  );
+  console.log("");
+
+  console.log(
+    colors.cyan(`  ${emoji.get("small_blue_diamond")} `) +
+      colors.white("Select soft delete approach"),
+  );
+  console.log("");
+  console.log(
+    "    " +
+      colors.bold.white("[1]") +
+      " " +
+      colors.accent("Timestamp") +
+      " " +
+      colors.dim("(deleted_at: null | Date)"),
+  );
+  console.log(
+    "        " +
+      colors.dim("Records are soft deleted by setting deleted_at to current timestamp"),
+  );
+  console.log("");
+  console.log(
+    "    " +
+      colors.bold.white("[2]") +
+      " " +
+      colors.accent("Boolean") +
+      " " +
+      colors.dim("(is_deleted: false | true)"),
+  );
+  console.log(
+    "        " +
+      colors.dim("Records are soft deleted by setting is_deleted to true"),
+  );
+  console.log("");
+
+  const choice = await p.select({
+    message: colors.bold.white("Select soft delete approach:"),
+    options: [
+      {
+        value: "timestamp",
+        label:
+          colors.accent("Timestamp") +
+          " " +
+          colors.dim("(deleted_at: null | Date)"),
+      },
+      {
+        value: "boolean",
+        label:
+          colors.accent("Boolean") +
+          " " +
+          colors.dim("(is_deleted: false | true)"),
+      },
+    ],
+  });
+
+  if (p.isCancel(choice)) {
+    console.log(
+      colors.yellow(`\n  ${emoji.get("warning")} Operation cancelled by user.`),
+    );
+    process.exit(0);
+  }
+
+  const approachName = choice === "timestamp" ? "Timestamp (deleted_at)" : "Boolean (is_deleted)";
+
+  console.log(
+    colors.green(`    ${emoji.get("white_check_mark")} Selected: `) +
+      colors.bold.white(approachName),
+  );
+  console.log("");
+
+  return choice;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // SERVICE NAME INPUT
 // ═══════════════════════════════════════════════════════════════════════════
 async function getServiceName() {
@@ -594,6 +802,14 @@ function snakeToCamel(str) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// CONVERT SNAKE_CASE TO PASCALCASE
+// ═══════════════════════════════════════════════════════════════════════════
+function snakeToPascal(str) {
+  const camel = snakeToCamel(str);
+  return camel.charAt(0).toUpperCase() + camel.slice(1);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // CONFIGURATION PREVIEW
 // ═══════════════════════════════════════════════════════════════════════════
 async function showConfigurationPreview(
@@ -601,9 +817,10 @@ async function showConfigurationPreview(
   camelName,
   folderStructure,
   language,
+  crudConfig = null,
 ) {
   console.log(
-    colors.bold.white("Step 4") +
+    colors.bold.white("Step 5") +
       " " +
       colors.gray("→") +
       " " +
@@ -644,6 +861,39 @@ async function showConfigurationPreview(
       "           " +
       colors.accent(language === "ts" ? "TypeScript" : "JavaScript"),
   );
+
+  // Show CRUD configuration if enabled
+  if (crudConfig && crudConfig.enabled) {
+    console.log(
+      "    " +
+        colors.gray("CRUD APIs") +
+        "          " +
+        colors.green("Enabled"),
+    );
+    console.log(
+      "    " +
+        colors.gray("Prisma Model") +
+        "       " +
+        colors.accent(crudConfig.modelName),
+    );
+    console.log(
+      "    " +
+        colors.gray("Soft Delete") +
+        "        " +
+        colors.accent(
+          crudConfig.softDeleteApproach === "timestamp"
+            ? "Timestamp (deleted_at)"
+            : "Boolean (is_deleted)"
+        ),
+    );
+  } else {
+    console.log(
+      "    " +
+        colors.gray("CRUD APIs") +
+        "          " +
+        colors.dim("Disabled (Empty templates)"),
+    );
+  }
 
   if (folderStructure === "current") {
     console.log(
@@ -801,7 +1051,343 @@ export default router;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// TYPESCRIPT FILE TEMPLATES
+// CRUD FILE TEMPLATES (JavaScript)
+// ═══════════════════════════════════════════════════════════════════════════
+function getCrudServiceTemplate(folderStructure, name, camelName, pascalName, modelName, softDeleteApproach) {
+  const dbImportPath =
+    folderStructure === "current" ? "../config/db.js" : "../../config/db.js";
+  const paginationImportPath =
+    folderStructure === "current" ? "../utils/pagination.util.js" : "../../utils/pagination.util.js";
+  
+  const softDeleteCheck = softDeleteApproach === "timestamp" ? "deleted_at: null" : "is_deleted: false";
+  const softDeleteUpdate = softDeleteApproach === "timestamp" 
+    ? "deleted_at: new Date()" 
+    : "is_deleted: true";
+  const softDeleteExistingCheck = softDeleteApproach === "timestamp"
+    ? "existing_${camelName}.deleted_at"
+    : "existing_${camelName}.is_deleted";
+
+  return `import createHttpError from "http-errors";
+
+//Configs
+import db from "${dbImportPath}";
+
+//Utils
+import { paginateQuery } from "${paginationImportPath}";
+
+export const create = async (data) => {
+    //duplicate: fetch the existing ${camelName}
+    const existing_${camelName} = await db.${modelName}.findFirst({
+        where: {
+            name: data.name,
+            ${softDeleteCheck},
+        },
+    });
+
+    //error: if ${camelName} with this name already exists, throw error
+    if (existing_${camelName}) {
+        throw createHttpError(409, "${pascalName} with this name already exists");
+    }
+
+    //create: ${camelName}
+    const new_${camelName} = await db.${modelName}.create({
+        data,
+    });
+
+    //return: the created ${camelName}
+    return new_${camelName};
+};
+
+export const getAll = async (queries) => {
+    //fetch: get all ${camelName} data with pagination
+    const data = await paginateQuery(db.${modelName}, {
+        page: queries.page,
+        limit: queries.limit,
+        order_by: {
+            [queries.sort_by]: queries.sort_order,
+        },
+        where: {
+            ${softDeleteCheck},
+            ...(queries.search && {
+                OR: [
+                    { name: { contains: queries.search } }
+                ],
+            }),
+        },
+    });
+
+    //return: the paginated ${camelName} data
+    return data;
+};
+
+export const getById = async (id) => {
+    //fetch: get ${camelName} by id
+    const data = await db.${modelName}.findUnique({
+        where: {
+            id,
+            ${softDeleteCheck},
+        },
+    });
+
+    //error: if ${camelName} not found, throw error
+    if (!data) {
+        throw createHttpError(404, "${pascalName} not found");
+    }
+
+    //return: the ${camelName}
+    return data;
+};
+
+export const update = async (id, data) => {
+    //fetch: get ${camelName} by id
+    const existing_${camelName} = await db.${modelName}.findUnique({
+        where: {
+            id,
+            ${softDeleteCheck},
+        },
+    });
+
+    //error: if ${camelName} not found, throw error
+    if (!existing_${camelName}) {
+        throw createHttpError(404, "${pascalName} not found");
+    }
+
+    //check: for duplicate name
+    const duplicate_name = await db.${modelName}.findFirst({
+        where: {
+            name: data.name,
+            id: {
+                not: id,
+            },
+            ${softDeleteCheck},
+        },
+    });
+
+    //error: if ${camelName} with this name already exists, throw error
+    if (duplicate_name) {
+        throw createHttpError(409, "${pascalName} with this name already exists");
+    }
+
+    //update: ${camelName}
+    const updated_${camelName} = await db.${modelName}.update({
+        where: {
+            id,
+        },
+        data,
+    });
+
+    //return: the updated ${camelName}
+    return updated_${camelName};
+};
+
+export const remove = async (id) => {
+    //fetch: get ${camelName} by id
+    const existing_${camelName} = await db.${modelName}.findUnique({
+        where: {
+            id,
+        },
+    });
+
+    //error: if ${camelName} not found, throw error
+    if (!existing_${camelName} || ${softDeleteApproach === "timestamp" ? `existing_${camelName}.deleted_at` : `existing_${camelName}.is_deleted`}) {
+        throw createHttpError(404, "${pascalName} not found");
+    }
+
+    //delete: ${camelName}
+    await db.${modelName}.update({
+        where: {
+            id,
+        },
+        data: {
+            ${softDeleteUpdate},
+        },
+    });
+};
+`;
+}
+
+function getCrudValidationTemplate(name, camelName, pascalName) {
+  return `import { z } from "zod";
+
+export const create${pascalName}Schema = z.object({
+    name: z.string().min(2).max(100).trim().toUpperCase()
+});
+
+export const getAll${pascalName}sSchema = z.object({
+    page: z.coerce.number().min(1).default(1),
+    limit: z.coerce.number().min(1).default(20),
+    sort_by: z.enum(["name", "createdAt"]).default("createdAt"),
+    sort_order: z.enum(["asc", "desc"]).default("desc"),
+    search: z.string().trim().optional(), //note: search by name
+});
+
+export const get${pascalName}ByIdSchema = z.object({
+    id: z.string().uuid(),
+});
+`;
+}
+
+function getCrudControllerTemplate(name, camelName, pascalName, folderStructure) {
+  const serviceImportPath =
+    folderStructure === "current"
+      ? `../services/${name}.service.js`
+      : `./${name}.service.js`;
+  const validationImportPath =
+    folderStructure === "current"
+      ? `../validations/${name}.validation.js`
+      : `./${name}.validation.js`;
+
+  return `//Services
+import * as ${camelName}Service from "${serviceImportPath}";
+
+//Validations
+import * as ${camelName}Validation from "${validationImportPath}";
+
+export const create${pascalName} = async (req, res, next) => {
+    try {
+        //validation: parse the request body
+        const valid_data = await ${camelName}Validation.create${pascalName}Schema.parseAsync(req.body);
+
+        //service: create ${camelName}
+        const data = await ${camelName}Service.create(valid_data);
+
+        //response: return the created ${camelName}
+        res.status(201).json({
+            status: true,
+            message: "${pascalName} created successfully",
+            data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getAll${pascalName}s = async (req, res, next) => {
+    try {
+        //validation: parse the request query
+        const valid_data = await ${camelName}Validation.getAll${pascalName}sSchema.parseAsync(req.query);
+
+        //service: get all ${camelName}s
+        const data = await ${camelName}Service.getAll(valid_data);
+
+        //response: return the list of ${camelName}s
+        res.status(200).json({
+            status: true,
+            message: "${pascalName}s retrieved successfully",
+            data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const get${pascalName}ById = async (req, res, next) => {
+    try {
+        //validation: parse the request params
+        const valid_params = await ${camelName}Validation.get${pascalName}ByIdSchema.parseAsync(req.params);
+
+        //service: get ${camelName} by id
+        const data = await ${camelName}Service.getById(valid_params.id);
+
+        //response: return the ${camelName}
+        res.status(200).json({
+            status: true,
+            message: "${pascalName} retrieved successfully",
+            data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const update${pascalName} = async (req, res, next) => {
+    try {
+        //validation: parse the request params
+        const valid_params = await ${camelName}Validation.get${pascalName}ByIdSchema.parseAsync(req.params);
+
+        //validation: parse the request body
+        const valid_data = await ${camelName}Validation.create${pascalName}Schema.parseAsync(req.body);
+
+        //service: update ${camelName}
+        const data = await ${camelName}Service.update(valid_params.id, valid_data);
+
+        //response: return the updated ${camelName}
+        res.status(200).json({
+            status: true,
+            message: "${pascalName} updated successfully",
+            data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const delete${pascalName} = async (req, res, next) => {
+    try {
+        //validation: parse the request params
+        const valid_params = await ${camelName}Validation.get${pascalName}ByIdSchema.parseAsync(req.params);
+
+        //service: delete ${camelName}
+        await ${camelName}Service.remove(valid_params.id);
+
+        //response: return success message
+        res.status(200).json({
+            status: true,
+            message: "${pascalName} deleted successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+`;
+}
+
+function getCrudRouterTemplate(name, camelName, pascalName, folderStructure) {
+  const controllerImportPath =
+    folderStructure === "current"
+      ? `../../controllers/${name}.controller.js`
+      : `./${name}.controller.js`;
+  const middlewareImportPath =
+    folderStructure === "current"
+      ? "../../middlewares/token.middleware.js"
+      : "../../middlewares/token.middleware.js";
+  const constantsImportPath =
+    folderStructure === "current"
+      ? "../../constants/user.constant.js"
+      : "../../constants/user.constant.js";
+
+  return `import express from "express";
+
+//Controllers
+import * as ${camelName}Controller from "${controllerImportPath}";
+
+//Middlewares
+import * as tokenMiddleware from "${middlewareImportPath}";
+
+//Constants
+import { ROLES } from "${constantsImportPath}";
+
+const router = express.Router();
+
+//POST: Create ${camelName}
+router.post("/", ${camelName}Controller.create${pascalName});
+
+//GET: Get all ${camelName}s
+router.get("/", ${camelName}Controller.getAll${pascalName}s);
+
+//GET: Get ${camelName} by id
+router.get("/:id", ${camelName}Controller.get${pascalName}ById);
+
+//PUT: Update ${camelName} by id
+router.put("/:id", ${camelName}Controller.update${pascalName});
+
+//DELETE: Delete ${camelName} by id
+router.delete("/:id", ${camelName}Controller.delete${pascalName});
+
+export default router;
+`;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 function getServiceTemplateTS(folderStructure) {
   const dbImportPath =
@@ -910,6 +1496,361 @@ export default router;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// CRUD FILE TEMPLATES (TypeScript)
+// ═══════════════════════════════════════════════════════════════════════════
+function getCrudServiceTemplateTS(folderStructure, name, camelName, pascalName, modelName, softDeleteApproach) {
+  const dbImportPath =
+    folderStructure === "current" ? "../config/db" : "../../config/db";
+  const paginationImportPath =
+    folderStructure === "current" ? "../utils/pagination.util" : "../../utils/pagination.util";
+  
+  const softDeleteCheck = softDeleteApproach === "timestamp" ? "deleted_at: null" : "is_deleted: false";
+  const softDeleteUpdate = softDeleteApproach === "timestamp" 
+    ? "deleted_at: new Date()" 
+    : "is_deleted: true";
+
+  return `import createHttpError from "http-errors";
+
+//Configs
+import db from "${dbImportPath}";
+
+//Utils
+import { paginateQuery } from "${paginationImportPath}";
+
+//Types
+export interface Create${pascalName}Data {
+    name: string;
+}
+
+export interface GetAll${pascalName}sQueries {
+    page: number;
+    limit: number;
+    sort_by: string;
+    sort_order: "asc" | "desc";
+    search?: string;
+}
+
+export const create = async (data: Create${pascalName}Data) => {
+    //duplicate: fetch the existing ${camelName}
+    const existing_${camelName} = await db.${modelName}.findFirst({
+        where: {
+            name: data.name,
+            ${softDeleteCheck},
+        },
+    });
+
+    //error: if ${camelName} with this name already exists, throw error
+    if (existing_${camelName}) {
+        throw createHttpError(409, "${pascalName} with this name already exists");
+    }
+
+    //create: ${camelName}
+    const new_${camelName} = await db.${modelName}.create({
+        data,
+    });
+
+    //return: the created ${camelName}
+    return new_${camelName};
+};
+
+export const getAll = async (queries: GetAll${pascalName}sQueries) => {
+    //fetch: get all ${camelName} data with pagination
+    const data = await paginateQuery(db.${modelName}, {
+        page: queries.page,
+        limit: queries.limit,
+        order_by: {
+            [queries.sort_by]: queries.sort_order,
+        },
+        where: {
+            ${softDeleteCheck},
+            ...(queries.search && {
+                OR: [
+                    { name: { contains: queries.search } }
+                ],
+            }),
+        },
+    });
+
+    //return: the paginated ${camelName} data
+    return data;
+};
+
+export const getById = async (id: string) => {
+    //fetch: get ${camelName} by id
+    const data = await db.${modelName}.findUnique({
+        where: {
+            id,
+            ${softDeleteCheck},
+        },
+    });
+
+    //error: if ${camelName} not found, throw error
+    if (!data) {
+        throw createHttpError(404, "${pascalName} not found");
+    }
+
+    //return: the ${camelName}
+    return data;
+};
+
+export const update = async (id: string, data: Create${pascalName}Data) => {
+    //fetch: get ${camelName} by id
+    const existing_${camelName} = await db.${modelName}.findUnique({
+        where: {
+            id,
+            ${softDeleteCheck},
+        },
+    });
+
+    //error: if ${camelName} not found, throw error
+    if (!existing_${camelName}) {
+        throw createHttpError(404, "${pascalName} not found");
+    }
+
+    //check: for duplicate name
+    const duplicate_name = await db.${modelName}.findFirst({
+        where: {
+            name: data.name,
+            id: {
+                not: id,
+            },
+            ${softDeleteCheck},
+        },
+    });
+
+    //error: if ${camelName} with this name already exists, throw error
+    if (duplicate_name) {
+        throw createHttpError(409, "${pascalName} with this name already exists");
+    }
+
+    //update: ${camelName}
+    const updated_${camelName} = await db.${modelName}.update({
+        where: {
+            id,
+        },
+        data,
+    });
+
+    //return: the updated ${camelName}
+    return updated_${camelName};
+};
+
+export const remove = async (id: string): Promise<void> => {
+    //fetch: get ${camelName} by id
+    const existing_${camelName} = await db.${modelName}.findUnique({
+        where: {
+            id,
+        },
+    });
+
+    //error: if ${camelName} not found, throw error
+    if (!existing_${camelName} || ${softDeleteApproach === "timestamp" ? `existing_${camelName}.deleted_at` : `existing_${camelName}.is_deleted`}) {
+        throw createHttpError(404, "${pascalName} not found");
+    }
+
+    //delete: ${camelName}
+    await db.${modelName}.update({
+        where: {
+            id,
+        },
+        data: {
+            ${softDeleteUpdate},
+        },
+    });
+};
+`;
+}
+
+function getCrudValidationTemplateTS(name, camelName, pascalName) {
+  return `import { z } from "zod";
+
+export const create${pascalName}Schema = z.object({
+    name: z.string().min(2).max(100).trim().toUpperCase()
+});
+
+export const getAll${pascalName}sSchema = z.object({
+    page: z.coerce.number().min(1).default(1),
+    limit: z.coerce.number().min(1).default(20),
+    sort_by: z.enum(["name", "createdAt"]).default("createdAt"),
+    sort_order: z.enum(["asc", "desc"]).default("desc"),
+    search: z.string().trim().optional(), //note: search by name
+});
+
+export const get${pascalName}ByIdSchema = z.object({
+    id: z.string().uuid(),
+});
+
+//Types inferred from schemas
+export type Create${pascalName}Input = z.infer<typeof create${pascalName}Schema>;
+export type GetAll${pascalName}sInput = z.infer<typeof getAll${pascalName}sSchema>;
+export type Get${pascalName}ByIdInput = z.infer<typeof get${pascalName}ByIdSchema>;
+`;
+}
+
+function getCrudControllerTemplateTS(name, camelName, pascalName, folderStructure) {
+  const serviceImportPath =
+    folderStructure === "current"
+      ? `../services/${name}.service`
+      : `./${name}.service`;
+  const validationImportPath =
+    folderStructure === "current"
+      ? `../validations/${name}.validation`
+      : `./${name}.validation`;
+
+  return `import { Request, Response, NextFunction } from "express";
+
+//Services
+import * as ${camelName}Service from "${serviceImportPath}";
+
+//Validations
+import * as ${camelName}Validation from "${validationImportPath}";
+
+export const create${pascalName} = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        //validation: parse the request body
+        const valid_data = await ${camelName}Validation.create${pascalName}Schema.parseAsync(req.body);
+
+        //service: create ${camelName}
+        const data = await ${camelName}Service.create(valid_data);
+
+        //response: return the created ${camelName}
+        res.status(201).json({
+            status: true,
+            message: "${pascalName} created successfully",
+            data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getAll${pascalName}s = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        //validation: parse the request query
+        const valid_data = await ${camelName}Validation.getAll${pascalName}sSchema.parseAsync(req.query);
+
+        //service: get all ${camelName}s
+        const data = await ${camelName}Service.getAll(valid_data);
+
+        //response: return the list of ${camelName}s
+        res.status(200).json({
+            status: true,
+            message: "${pascalName}s retrieved successfully",
+            data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const get${pascalName}ById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        //validation: parse the request params
+        const valid_params = await ${camelName}Validation.get${pascalName}ByIdSchema.parseAsync(req.params);
+
+        //service: get ${camelName} by id
+        const data = await ${camelName}Service.getById(valid_params.id);
+
+        //response: return the ${camelName}
+        res.status(200).json({
+            status: true,
+            message: "${pascalName} retrieved successfully",
+            data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const update${pascalName} = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        //validation: parse the request params
+        const valid_params = await ${camelName}Validation.get${pascalName}ByIdSchema.parseAsync(req.params);
+
+        //validation: parse the request body
+        const valid_data = await ${camelName}Validation.create${pascalName}Schema.parseAsync(req.body);
+
+        //service: update ${camelName}
+        const data = await ${camelName}Service.update(valid_params.id, valid_data);
+
+        //response: return the updated ${camelName}
+        res.status(200).json({
+            status: true,
+            message: "${pascalName} updated successfully",
+            data,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const delete${pascalName} = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        //validation: parse the request params
+        const valid_params = await ${camelName}Validation.get${pascalName}ByIdSchema.parseAsync(req.params);
+
+        //service: delete ${camelName}
+        await ${camelName}Service.remove(valid_params.id);
+
+        //response: return success message
+        res.status(200).json({
+            status: true,
+            message: "${pascalName} deleted successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+`;
+}
+
+function getCrudRouterTemplateTS(name, camelName, pascalName, folderStructure) {
+  const controllerImportPath =
+    folderStructure === "current"
+      ? `../../controllers/${name}.controller`
+      : `./${name}.controller`;
+  const middlewareImportPath =
+    folderStructure === "current"
+      ? "../../middlewares/token.middleware"
+      : "../../middlewares/token.middleware";
+  const constantsImportPath =
+    folderStructure === "current"
+      ? "../../constants/user.constant"
+      : "../../constants/user.constant";
+
+  return `import express, { Router } from "express";
+
+//Controllers
+import * as ${camelName}Controller from "${controllerImportPath}";
+
+//Middlewares
+import * as tokenMiddleware from "${middlewareImportPath}";
+
+//Constants
+import { ROLES } from "${constantsImportPath}";
+
+const router: Router = express.Router();
+
+//POST: Create ${camelName}
+router.post("/", ${camelName}Controller.create${pascalName});
+
+//GET: Get all ${camelName}s
+router.get("/", ${camelName}Controller.getAll${pascalName}s);
+
+//GET: Get ${camelName} by id
+router.get("/:id", ${camelName}Controller.get${pascalName}ById);
+
+//PUT: Update ${camelName} by id
+router.put("/:id", ${camelName}Controller.update${pascalName});
+
+//DELETE: Delete ${camelName} by id
+router.delete("/:id", ${camelName}Controller.delete${pascalName});
+
+export default router;
+`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // FILE GENERATION
 // ═══════════════════════════════════════════════════════════════════════════
 async function generateFiles(
@@ -917,10 +1858,12 @@ async function generateFiles(
   camelName,
   folderStructure,
   language = "js",
+  crudConfig = null,
 ) {
   const ext = language === "ts" ? ".ts" : ".js";
+  const pascalName = snakeToPascal(name);
   console.log(
-    colors.bold.white("Step 5") +
+    colors.bold.white("Step 6") +
       " " +
       colors.gray("→") +
       " " +
@@ -953,10 +1896,16 @@ async function generateFiles(
 
     // Create the service file
     const serviceFile = path.join(servicesFolder, `${name}.service${ext}`);
-    const serviceContent =
-      language === "ts"
+    let serviceContent;
+    if (crudConfig && crudConfig.enabled) {
+      serviceContent = language === "ts"
+        ? getCrudServiceTemplateTS(folderStructure, name, camelName, pascalName, crudConfig.modelName, crudConfig.softDeleteApproach)
+        : getCrudServiceTemplate(folderStructure, name, camelName, pascalName, crudConfig.modelName, crudConfig.softDeleteApproach);
+    } else {
+      serviceContent = language === "ts"
         ? getServiceTemplateTS(folderStructure)
         : getServiceTemplate(folderStructure);
+    }
     await fs.writeFile(serviceFile, serviceContent);
     printSuccess(`Created: ${colors.cyan(serviceFile)}`);
     filesCreated.push(serviceFile);
@@ -966,8 +1915,14 @@ async function generateFiles(
       validationsFolder,
       `${name}.validation${ext}`,
     );
-    const validationContent =
-      language === "ts" ? getValidationTemplateTS() : getValidationTemplate();
+    let validationContent;
+    if (crudConfig && crudConfig.enabled) {
+      validationContent = language === "ts"
+        ? getCrudValidationTemplateTS(name, camelName, pascalName)
+        : getCrudValidationTemplate(name, camelName, pascalName);
+    } else {
+      validationContent = language === "ts" ? getValidationTemplateTS() : getValidationTemplate();
+    }
     await fs.writeFile(validationFile, validationContent);
     printSuccess(`Created: ${colors.cyan(validationFile)}`);
     filesCreated.push(validationFile);
@@ -977,20 +1932,32 @@ async function generateFiles(
       controllersFolder,
       `${name}.controller${ext}`,
     );
-    const controllerContent =
-      language === "ts"
+    let controllerContent;
+    if (crudConfig && crudConfig.enabled) {
+      controllerContent = language === "ts"
+        ? getCrudControllerTemplateTS(name, camelName, pascalName, folderStructure)
+        : getCrudControllerTemplate(name, camelName, pascalName, folderStructure);
+    } else {
+      controllerContent = language === "ts"
         ? getControllerTemplateTS(name, camelName, folderStructure)
         : getControllerTemplate(name, camelName, folderStructure);
+    }
     await fs.writeFile(controllerFile, controllerContent);
     printSuccess(`Created: ${colors.cyan(controllerFile)}`);
     filesCreated.push(controllerFile);
 
     // Create the router file
     const routerFile = path.join(routesFolder, `${name}.routes${ext}`);
-    const routerContent =
-      language === "ts"
+    let routerContent;
+    if (crudConfig && crudConfig.enabled) {
+      routerContent = language === "ts"
+        ? getCrudRouterTemplateTS(name, camelName, pascalName, folderStructure)
+        : getCrudRouterTemplate(name, camelName, pascalName, folderStructure);
+    } else {
+      routerContent = language === "ts"
         ? getRouterTemplateTS(name, camelName, folderStructure)
         : getRouterTemplate(name, camelName, folderStructure);
+    }
     await fs.writeFile(routerFile, routerContent);
     printSuccess(`Created: ${colors.cyan(routerFile)}`);
     filesCreated.push(routerFile);
@@ -1009,38 +1976,62 @@ async function generateFiles(
 
     // Create the service file
     const serviceFile = path.join(moduleFolder, `${name}.service${ext}`);
-    const serviceContent =
-      language === "ts"
+    let serviceContent;
+    if (crudConfig && crudConfig.enabled) {
+      serviceContent = language === "ts"
+        ? getCrudServiceTemplateTS(folderStructure, name, camelName, pascalName, crudConfig.modelName, crudConfig.softDeleteApproach)
+        : getCrudServiceTemplate(folderStructure, name, camelName, pascalName, crudConfig.modelName, crudConfig.softDeleteApproach);
+    } else {
+      serviceContent = language === "ts"
         ? getServiceTemplateTS(folderStructure)
         : getServiceTemplate(folderStructure);
+    }
     await fs.writeFile(serviceFile, serviceContent);
     printSuccess(`Created: ${colors.cyan(serviceFile)}`);
     filesCreated.push(serviceFile);
 
     // Create the validation file
     const validationFile = path.join(moduleFolder, `${name}.validation${ext}`);
-    const validationContent =
-      language === "ts" ? getValidationTemplateTS() : getValidationTemplate();
+    let validationContent;
+    if (crudConfig && crudConfig.enabled) {
+      validationContent = language === "ts"
+        ? getCrudValidationTemplateTS(name, camelName, pascalName)
+        : getCrudValidationTemplate(name, camelName, pascalName);
+    } else {
+      validationContent = language === "ts" ? getValidationTemplateTS() : getValidationTemplate();
+    }
     await fs.writeFile(validationFile, validationContent);
     printSuccess(`Created: ${colors.cyan(validationFile)}`);
     filesCreated.push(validationFile);
 
     // Create the controller file
     const controllerFile = path.join(moduleFolder, `${name}.controller${ext}`);
-    const controllerContent =
-      language === "ts"
+    let controllerContent;
+    if (crudConfig && crudConfig.enabled) {
+      controllerContent = language === "ts"
+        ? getCrudControllerTemplateTS(name, camelName, pascalName, folderStructure)
+        : getCrudControllerTemplate(name, camelName, pascalName, folderStructure);
+    } else {
+      controllerContent = language === "ts"
         ? getControllerTemplateTS(name, camelName, folderStructure)
         : getControllerTemplate(name, camelName, folderStructure);
+    }
     await fs.writeFile(controllerFile, controllerContent);
     printSuccess(`Created: ${colors.cyan(controllerFile)}`);
     filesCreated.push(controllerFile);
 
     // Create the router file
     const routerFile = path.join(moduleFolder, `${name}.routes${ext}`);
-    const routerContent =
-      language === "ts"
+    let routerContent;
+    if (crudConfig && crudConfig.enabled) {
+      routerContent = language === "ts"
+        ? getCrudRouterTemplateTS(name, camelName, pascalName, folderStructure)
+        : getCrudRouterTemplate(name, camelName, pascalName, folderStructure);
+    } else {
+      routerContent = language === "ts"
         ? getRouterTemplateTS(name, camelName, folderStructure)
         : getRouterTemplate(name, camelName, folderStructure);
+    }
     await fs.writeFile(routerFile, routerContent);
     printSuccess(`Created: ${colors.cyan(routerFile)}`);
     filesCreated.push(routerFile);
@@ -1289,7 +2280,33 @@ async function main() {
       language = await selectLanguage();
     }
 
-    // Step 3: Get service name (skip if provided via CLI)
+    // Step 3: Ask for CRUD APIs (only in interactive mode and for JavaScript)
+    let crudConfig = null;
+    if (!isNonInteractive) {
+      const wantsCrud = await askForCrudApis();
+      
+      if (wantsCrud) {
+        // Step 3.1: Get Prisma model name
+        const modelName = await getPrismaModelName();
+        
+        // Step 3.2: Select soft delete approach
+        const softDeleteApproach = await selectSoftDeleteApproach();
+        
+        crudConfig = {
+          enabled: true,
+          modelName,
+          softDeleteApproach,
+        };
+      } else {
+        crudConfig = {
+          enabled: false,
+          modelName: null,
+          softDeleteApproach: null,
+        };
+      }
+    }
+
+    // Step 4: Get service name (skip if provided via CLI)
     let name;
     if (cliArgs.name) {
       name = cliArgs.name.toLowerCase();
@@ -1307,22 +2324,24 @@ async function main() {
     const lowerName = name.toLowerCase();
     const camelName = snakeToCamel(lowerName);
 
-    // Step 4: Show configuration preview and confirm (skip in non-interactive mode)
+    // Step 5: Show configuration preview and confirm (skip in non-interactive mode)
     if (!isNonInteractive) {
       await showConfigurationPreview(
         lowerName,
         camelName,
         folderStructure,
         language,
+        crudConfig,
       );
     }
 
-    // Step 5: Generate files
+    // Step 6: Generate files
     const filesCreated = await generateFiles(
       lowerName,
       camelName,
       folderStructure,
       language,
+      crudConfig,
     );
 
     // Print success summary

@@ -2,14 +2,28 @@
   "name": "skelr",
   "version": "2.1.0",
   "description": "CLI tool to scaffold service files with separate or modular folder structures",
-  "main": "skelr.js",
+  "main": "src/index.js",
   "type": "module",
   "bin": {
-    "skelr": "./skelr.js"
+    "skelr": "./bin/skelr.js"
   },
+  "exports": {
+    ".": "./src/index.js",
+    "./cli": "./src/cli/index.js",
+    "./templates": "./src/templates/index.js",
+    "./generators": "./src/generators/index.js",
+    "./utils": "./src/utils/index.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "scripts": {
-    "start": "node skelr.js",
-    "scaffold": "node skelr.js",
+    "start": "node bin/skelr.js",
+    "scaffold": "node bin/skelr.js",
     "prepublishOnly": "node -e \"console.log('Publishing skelr v' + require('./package.json').version); if (require('fs').existsSync('.git/index')) { console.log('Git repo detected - ready to publish'); } else { console.warn('Warning: Not in a git repository'); }\""
   },
   "keywords": [
